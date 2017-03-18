@@ -49,7 +49,7 @@ BEGIN
 			  ,[cc].[CardType]
 
 
-			  --Insert additional joins if you wish after here (Natasha, 2/21/17)
+			  --Insert additional joins if you wish after here
 
 			  ,asp.[Email]
 			  ,asp.[PhoneNumber]

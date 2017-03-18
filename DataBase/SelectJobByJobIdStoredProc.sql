@@ -1,11 +1,6 @@
 ALTER proc [dbo].[Jobs_SelectJobByJobId]
 		@Id int
 as
-/*
-		Declare @Id int = 1677
-		exec [dbo].[Jobs_SelectJobByJobId] @Id
-
-*/
 
 BEGIN
 
@@ -172,3 +167,9 @@ BEGIN
 		WHERE i.JobId = @Id
 
 END
+
+/* 		Test Code	
+		Declare @Id int = 1677
+		exec [dbo].[Jobs_SelectJobByJobId] @Id
+
+*/

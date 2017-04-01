@@ -30,26 +30,26 @@ namespace Bringpro.Web.Services
             }
             else
             {
-                AddressUpdateRequest updateAddress = new AddressUpdateRequest();
+                AddressUpdateRequest Address = new AddressUpdateRequest();
 
-                updateAddress.AddressId = CurrentAddress.AddressId;
-                updateAddress.Name = model.ContactName;
-                updateAddress.ExternalPlaceId = model.Address.ExternalPlaceId;
-                updateAddress.Line1 = model.Address.Line1;
-                updateAddress.City = model.Address.City;
-                updateAddress.State = model.Address.State;
-                updateAddress.ZipCode = model.Address.ZipCode;
+                Address.AddressId = CurrentAddress.AddressId;
+                Address.Name = model.ContactName;
+                Address.ExternalPlaceId = model.Address.ExternalPlaceId;
+                Address.Line1 = model.Address.Line1;
+                Address.City = model.Address.City;
+                Address.State = model.Address.State;
+                Address.ZipCode = model.Address.ZipCode;
 
                 if(model.Address.Latitude != null && model.Address.Latitude > 0)
                 {
-                    updateAddress.Latitude = model.Address.Latitude;
+                    Address.Latitude = model.Address.Latitude;
                 }
                 if (model.Address.Longitude != null && model.Address.Longitude > 0)
                 {
-                    updateAddress.Longitude = model.Address.Longitude;
+                    Address.Longitude = model.Address.Longitude;
                 }       
 
-                Update(updateAddress);
+                Update(Address);
                 addressId = CurrentAddress.AddressId;
 
             }
@@ -61,20 +61,20 @@ namespace Bringpro.Web.Services
         {
             var addressId = model.AddressId;
             AddressAddRequest newAddress = new AddressAddRequest();
-            AddressUpdateRequest updateAddress = new AddressUpdateRequest();
+            AddressUpdateRequest Address = new AddressUpdateRequest();
             
             if (addressId > 0)
             {
-                updateAddress.Name = model.Name;
-                updateAddress.AddressId = model.AddressId;
-                updateAddress.ExternalPlaceId = model.ExternalAddressId;
-                updateAddress.Line1 = model.Street;
-                updateAddress.City = model.City;
-                updateAddress.State = model.State;
-                updateAddress.ZipCode = model.ZipCode;
-                updateAddress.Country = model.Country;
+                Address.Name = model.Name;
+                Address.AddressId = model.AddressId;
+                Address.ExternalPlaceId = model.ExternalAddressId;
+                Address.Line1 = model.Street;
+                Address.City = model.City;
+                Address.State = model.State;
+                Address.ZipCode = model.ZipCode;
+                Address.Country = model.Country;
 
-                Update(updateAddress);
+                Update(Address);
              
             }
             else
@@ -95,7 +95,7 @@ namespace Bringpro.Web.Services
 
         public Address GetByExternalAddressId (string ExternalPlaceId)
         {
-            Address SingleAddress = null;
+            Address Address = null;
 
             DataProvider.ExecuteCmd(GetConnection, "dbo.Address_SelectByExternalId"
              , inputParamMapper: delegate (SqlParameterCollection paramCollection)
@@ -106,26 +106,26 @@ namespace Bringpro.Web.Services
              , map: delegate (IDataReader reader, short set)
              {
                  int startingIndex = 0;
-                 SingleAddress = new Address();
+                 Address = new Address();
 
-                 SingleAddress.AddressId = reader.GetSafeInt32(startingIndex++);
-                 SingleAddress.DateCreated = reader.GetSafeDateTime(startingIndex++);
-                 SingleAddress.DateModified = reader.GetSafeDateTime(startingIndex++);
-                 SingleAddress.UserId = reader.GetSafeString(startingIndex++);
-                 SingleAddress.Name = reader.GetSafeString(startingIndex++);
-                 SingleAddress.ExternalPlaceId = reader.GetSafeString(startingIndex++);
-                 SingleAddress.Line1 = reader.GetSafeString(startingIndex++);
-                 SingleAddress.Line2 = reader.GetSafeString(startingIndex++);
-                 SingleAddress.City = reader.GetSafeString(startingIndex++);
-                 SingleAddress.State = reader.GetSafeString(startingIndex++);
-                 SingleAddress.StateId = reader.GetSafeInt32(startingIndex++);
-                 SingleAddress.ZipCode = reader.GetSafeInt32(startingIndex++);
-                 SingleAddress.Latitude = reader.GetSafeDecimal(startingIndex++);
-                 SingleAddress.Longitude = reader.GetSafeDecimal(startingIndex++);
-                 SingleAddress.Country = reader.GetSafeString(startingIndex++);
+                 Address.AddressId = reader.GetSafeInt32(startingIndex++);
+                 Address.DateCreated = reader.GetSafeDateTime(startingIndex++);
+                 Address.DateModified = reader.GetSafeDateTime(startingIndex++);
+                 Address.UserId = reader.GetSafeString(startingIndex++);
+                 Address.Name = reader.GetSafeString(startingIndex++);
+                 Address.ExternalPlaceId = reader.GetSafeString(startingIndex++);
+                 Address.Line1 = reader.GetSafeString(startingIndex++);
+                 Address.Line2 = reader.GetSafeString(startingIndex++);
+                 Address.City = reader.GetSafeString(startingIndex++);
+                 Address.State = reader.GetSafeString(startingIndex++);
+                 Address.StateId = reader.GetSafeInt32(startingIndex++);
+                 Address.ZipCode = reader.GetSafeInt32(startingIndex++);
+                 Address.Latitude = reader.GetSafeDecimal(startingIndex++);
+                 Address.Longitude = reader.GetSafeDecimal(startingIndex++);
+                 Address.Country = reader.GetSafeString(startingIndex++);
              });
 
-            return SingleAddress;
+            return Address;
 
         }
 

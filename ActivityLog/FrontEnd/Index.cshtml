@@ -1,0 +1,251 @@
+﻿@model bringpro.Web.Models.ViewModels.SettingsViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_BringProLayout.cshtml";
+}
+
+
+<div class="card-body card-padding">
+    <div class="action-header palette-Teal-400 bg clearfix">
+        <div class="row">
+            <div class="ah-label hidden-xs col-md-6">
+                <h2 class="palette-White text">Activity Log Admin Page</h2>
+            </div>
+            <div class="pull-right " id="filter-by-type">
+                <p class="palette-White text">Filter By Activity Type</p>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        Select Activity Type
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="activity-type-dropdown"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="list-group lg-alt lg-even-black">
+            <div class="list-group-item" id="begin-list">
+            </div>
+        </div>
+        @*pagination*@
+        <div id="data-table-basic-footer" class="bootgrid-footer container-fluid">
+            <div class="row">
+                <div class="col-sm-6"><ul class="pagination"><li class="first disabled" aria-disabled="true"><a data-page="first" class="button"><i class="zmdi zmdi-more-horiz"></i></a></li><li class="prev disabled" aria-disabled="true"><a data-page="prev" class="button"><i class="zmdi zmdi-chevron-left"></i></a></li><li class="page-1 active" aria-disabled="false" aria-selected="true"><a data-page="1" class="button">1</a></li><li class="page-2" aria-disabled="false" aria-selected="false"><a data-page="2" class="button">2</a></li><li class="next" aria-disabled="false"><a data-page="next" class="button"><i class="zmdi zmdi-chevron-right"></i></a></li><li class="last" aria-disabled="false"><a data-page="last" class="button"><i class="zmdi zmdi-more-horiz"></i></a></li></ul></div>
+                <div class="col-sm-6 infoBar"><div class="infos">Showing 1 to 10 of 20 entries</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" id="template">
+    <div class="list-group-item media">
+        <div class="media-body">
+            <div class="lgi-heading" id="activity-log-id"></div>
+            <small id="user-id"></small>
+            <ul class="lgi-attrs">
+                <li id="activity-type"></li>
+                <li id="job-id"></li>
+                <li id="target-value"></li>
+                <li id="date-created"></li>
+            </ul>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="enumPlacementTemplate">
+    <li id="" class="dropdown-item"><a></a></li>
+
+</script>
+
+<script type="application/json" id="activityLogEnum">
+    @Html.RawJson(Model.ActivityTypeEnum.ToDictionaryByValue())
+</script>
+
+@section Scripts {
+    <style>
+        .container {
+            padding-top: 5.5px;
+        }
+
+        .list-group.lg-alt .list-group-item {
+            border: 0;
+            /* margin: 0; */
+            padding: 0;
+            padding-top: 8px;
+            padding-bottom: 7px;
+        }
+
+        .lgi-heading {
+            color: #333;
+            margin-top: 7px;
+            margin-bottom: 6px;
+            padding-left: 60px;
+        }
+
+        small, .small {
+            font-size: 92%;
+            padding-left: 60px;
+            padding-bottom: 6px;
+        }
+
+        .lgi-attrs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            padding-top: 6px;
+            padding-left: 60px;
+            padding-bottom: 6px;
+        }
+
+        #filter-by-type {
+            padding-right: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        h1, .h1, h2, .h2, h3, .h3 {
+            margin-top: 7px;
+            margin-bottom: 9px;
+        }
+    </style>
+
+
+    <script src="~/Assets/App/Services/bringpro.services.activityLog.js"></script>
+    <script src="~/Assets/bower_components/twbs-pagination/jquery.twbsPagination.js"></script>
+    <script type="text/javascript">
+
+        bringpro.page.startUp = function () {
+
+            //get the enum model, which is an object
+            bringpro.page.enum = JSON.parse($("#activityLogEnum").html());
+            console.log("Enum type", bringpro.page.enum);
+
+            //append enum types to dropdown
+            bringpro.page.attachDropdown();
+
+            bringpro.page.currentPage = 1;
+            bringpro.page.itemsPerPage = 10;
+            bringpro.page.totalItems = 0;
+
+            bringpro.page.pagination = $('.pagination');
+            bringpro.page.loadPage();
+            $('.dropdown-item').on('click', bringpro.page.handlers.onSelectActivityType);
+        }
+
+        bringpro.page.attachDropdown = function () {
+            console.log('Attaching dropdown');
+            for (var i = 1; i < Object.keys(bringpro.page.enum).length; i++) {
+                console.log("looping for enum");
+                var clonedListItem = $($("#enumPlacementTemplate").html()).clone();
+                clonedListItem.find('a').text(bringpro.page.enum[i]);
+                clonedListItem.attr("id", [i]);
+                console.log('enum i: ' + bringpro.page.enum[i]);
+                $('#activity-type-dropdown').append(clonedListItem);
+
+            }
+        }
+
+
+
+
+        bringpro.page.handlers.onSelectActivityType = function () {
+            console.log('An activity type has been clicked');
+            bringpro.page.selector = $(this).closest('.dropdown-item').context.id;
+            console.log('selector: ' + bringpro.page.selector);
+            bringpro.page.loadPage();
+
+        }
+
+        bringpro.page.handlers.onPageClick = function (evt, page) {
+            console.log("Current page is:", page);
+            bringpro.page.currentPage = page;
+            bringpro.page.loadPage();
+           // window.scrollTo(0, 0);
+        }
+
+        bringpro.page.loadPage = function () {
+            //puts variables we need for pagination
+            var payload =
+                {
+                    CurrentPage: bringpro.page.currentPage,
+                    ItemsPerPage: bringpro.page.itemsPerPage,
+                    Selector: bringpro.page.selector
+                };
+            console.log('this is the payload ... current page ', payload.CurrentPage, ' items per page ', payload.ItemsPerPage, ' selector ', bringpro.page.selector);
+            bringpro.services.activityLogGetAll(payload, bringpro.page.handlers.onGetAllSuccess, bringpro.page.handlers.onGetAllFail);
+        }
+
+
+        bringpro.page.handlers.onGetAllSuccess = function (data) {
+            console.log('Get all success.');
+
+
+            var totalPages = Math.ceil(data.totalItems / bringpro.page.itemsPerPage);
+            var currentPage = data.currentPage;
+            console.log('current page: ', currentPage);
+
+            bringpro.page.defaultOpts = {
+                totalPages: totalPages,
+                onPageClick: bringpro.page.handlers.onPageClick,
+                initiateStartPageClick: false //this stops destroy from being an infinite loop
+            };
+
+            bringpro.page.pagination.twbsPagination('destroy'); //destroys everything for pagination before usin initiateStartPageClick: false
+            bringpro.page.pagination.twbsPagination($.extend({}, bringpro.page.defaultOpts, {
+                startPage: currentPage,
+                totalPages: totalPages
+            }));
+
+
+            //gets data from database in form of an array
+            var activityLogArray = data.items;
+            console.log(activityLogArray);
+            //empty the div so it doesn't double up on page load
+            $("#begin-list").empty();
+
+            for (var i = 0; i < activityLogArray.length; i++) {
+                //copy HTML for a template
+                var activityLogTemplate = $($('#template').html()).clone();
+
+                //used to convert time to something that is readable by a human
+                var dateCreated = activityLogArray[i].idCreated
+                var dateLocalTime = new Date(dateCreated).toLocaleDateString();
+
+                //fills data into corresponding divs on page
+                activityLogTemplate.find('#activity-log-id').text('Activity Log Id: ' + activityLogArray[i].id);
+                activityLogTemplate.find('#user-id').text('User Id: ' + activityLogArray[i].userId);
+                activityLogTemplate.find('#activity-type').text('Activity type: ' + bringpro.page.enum[activityLogArray[i].activityTypeId]);
+                activityLogTemplate.find('#job-id').text('Job Id: ' + activityLogArray[i].jobId);
+                activityLogTemplate.find('#target-value').text('Target Value: ' + activityLogArray[i].targetValue);
+                activityLogTemplate.find('#date-created').text('Date Created: ' + dateLocalTime);
+
+                //attaches the template to the page
+                $("#begin-list").append(activityLogTemplate);
+            }
+
+            //change the "showing entries" number on bottom right corner
+            var n1 = ((currentPage - 1) * bringpro.page.itemsPerPage) + 1;
+            var pageTotalItems = data.totalItems;
+
+            if (bringpro.page.currentPage * bringpro.page.itemsPerPage < pageTotalItems) {
+                var n2 = (bringpro.page.currentPage * bringpro.page.itemsPerPage);
+                $('.infos').text('Showing ', n1, ' ', 'to ', n2, ' ', 'of ', pageTotalItems);
+
+            } else {
+                var n2 = pageTotalItems;
+                $('.infos').text('Showing ', n1, ' ', 'to ', n2);
+            };
+            console.log('total pages: ', totalPages, ' current page: ', currentPage, ' items per page: ', bringpro.page.itemsPerPage);
+
+        }
+
+        bringpro.page.handlers.OnGetAllFail = function () {
+            console.log('Get all fail.');
+        }
+
+    </script>
+}
+

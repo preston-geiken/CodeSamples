@@ -1,0 +1,83 @@
+ALTER Proc [dbo].[ActivityLog_SelectAllForSearchFourTables]
+	@CurrentPage int = 1
+	,@ItemsPerPage int = 5
+	,@Selector int = null
+
+as
+
+BEGIN
+
+	SELECT aL.[Id]
+		  ,aL.[UserId]
+		  ,aL.[ActivityTypeId]
+		  ,aL.[JobId]
+		  ,aL.[TargetValue]
+		  ,aL.[IdCreated]
+
+		  ,uP.[UserProfileId]
+		  ,uP.[FirstName]
+		  ,uP.[LastName]
+		  ,uP.[ExternalUserId]
+		  ,uP.[DateAdded]
+		  ,uP.[DateModified]
+		  ,uP.[MediaId]
+
+		  ,med.[Url]
+
+		  ,jobs.[Id]
+		  ,jobs.[Status]
+		  ,jobs.[JobType]
+		  ,jobs.[Price]
+		  ,jobs.[JobRequest]
+		  ,jobs.[ContactName]
+		  ,jobs.[Phone]
+		  ,jobs.[SpecialInstructions]
+		  ,jobs.[Created]
+		  ,jobs.[Modified]
+
+  
+	  FROM dbo.ActivityLog as aL
+	  left join dbo.UserProfiles as uP
+	  on aL.UserId = uP.UserId
+
+	  left join dbo.Media as med
+	  on up.MediaId = med.Id
+
+	  left join dbo.Jobs as jobs
+	  on aL.UserId = jobs.UserId
+
+	  ORDER BY ActivityTypeId
+
+	  OFFSET ((@CurrentPage - 1) * @ItemsPerPage) ROWS
+	  FETCH NEXT @ItemsPerPage ROWS ONLY
+
+	  SELECT COUNT('Id')
+	  FROM [dbo].[ActivityLog]
+	  WHERE (@Selector IS NULL OR
+			 ActivityTypeId = @Selector)
+
+END
+
+
+/*	TEST CODE:
+
+
+    Declare @CurrentPage int = 1
+	Declare @ItemsPerPage int = 19
+	Declare @Selector int = 7
+	Declare @userId nvarchar(128) = '7a223dfd-dce6-42a7-b4d5-6cde3a6652fc'
+	exec ActivityLog_SelectAllForSearchFourTables @CurrentPage
+												  ,@ItemsPerPage
+												  ,@Selector
+
+	use this userId to find an example for Jobs database: 
+
+	Declare @CurrentPage int = 1
+	Declare @ItemsPerPage int = 19
+	Declare @Selector int = 7
+	Declare @userId nvarchar(128) = 'e957b7f9-62d5-4129-b90b-1dd9d94911b4'
+	exec ActivityLog_SelectAllForSearchFourTables @CurrentPage
+												  ,@ItemsPerPage
+												  ,@Selector
+						  
+*/

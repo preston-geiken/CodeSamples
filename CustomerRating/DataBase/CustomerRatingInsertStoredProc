@@ -1,0 +1,51 @@
+ALTER proc [dbo].[CustomerRating_Insert]
+		   @UserId nvarchar(128) = null
+           ,@Rating decimal(3, 1)
+           ,@Note nvarchar(MAX) = null
+           ,@JobId int = null
+		   ,@Id int OUTPUT
+
+as
+
+Begin
+
+		INSERT INTO [dbo].[CustomerRating]
+				   ([UserId]
+				   ,[DateCreated]
+				   ,[DateModified]
+				   ,[Rating]
+				   ,[Note]
+				   ,[JobId])
+			 VALUES
+				   (@UserId
+				   ,GETUTCDATE()
+				   ,GETUTCDATE()
+				   ,@Rating
+				   ,@Note
+				   ,@JobId)
+
+				   	SET @Id = SCOPE_IDENTITY();
+
+End
+
+/*		TEST CODE:
+
+
+		Declare @UserId nvarchar(128) = '85'
+				,@Rating decimal(3,1) = 4.8
+				,@Note nvarchar(max) = 'this customer is pretty good'
+				,@JobId int = 1234567
+				,@Id int = 0
+		
+		Exec [dbo].[CustomerRating_Insert]     @UserId
+											   ,@Rating 
+											   ,@Note 
+											   ,@JobId
+											   ,@Id OUTPUT 
+
+		Select * 
+		From [dbo].[CustomerRating]
+		WHERE Id = @Id
+		
+
+*/

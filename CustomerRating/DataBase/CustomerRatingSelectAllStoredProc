@@ -1,0 +1,28 @@
+ALTER proc [dbo].[CustomerRating_SelectAll]
+
+as
+
+BEGIN
+
+	SELECT cr.[Id]
+		  ,cr.[UserId]
+		  ,cr.[DateCreated]
+		  ,cr.[DateModified]
+		  ,cr.[Rating]
+		  ,cr.[Note]
+		  ,cr.[JobId]
+
+		  ,uP.[FirstName]
+		  ,uP.[LastName]
+		  ,uP.[ExternalUserId]
+	  FROM [dbo].[CustomerRating] as cr
+	  left join dbo.UserProfiles as uP
+	  on cr.[UserId] = uP.[UserId]
+	
+END
+
+/*  TEST CODE:
+
+  exec CustomerRating_SelectAll
+
+*/

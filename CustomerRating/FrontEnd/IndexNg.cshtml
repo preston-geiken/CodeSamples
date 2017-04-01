@@ -1,0 +1,314 @@
+﻿
+@{
+    ViewBag.Title = "IndexNg";
+    Layout = "~/Views/Shared/_BringProLayout.cshtml";
+}
+
+<style>
+    .ngrateit-star {
+        background-size: 20px;
+    }
+</style>
+
+<div class="card" ng-controller="customerRatingController as cr">
+    <div class="card-header">
+        <h1>Customer Rating</h1>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form name="cr.customerRatingForm" id="customerRatingForm" ng-submit="cr.submitForm(cr.customerRatingForm.$valid)" novalidate>
+                    <div class="form-group m-l-30" ng-class="{'has-error' : cr.customerRatingForm.customerSelection.$error.required && !cr.customerRatingForm.customerSelection.$pristine}">
+                        <label for="customerSelection"><strong>1)  Select Customer to Rate</strong></label>
+                        <select class="form-control" id="customerSelection" name="customerSelection" ng-model="cr.rating.userId" ng-change="cr.userIdChanged()" required>
+                            <option value="">Choose a Customer</option>
+                            <option ng-repeat="account in cr.users" ng-value="account.userId">{{account.firstName}} {{account.lastName}} {{account.email}}</option>
+                        </select>
+                        <small ng-show="cr.customerRatingForm.customerSelection.$error.required && !cr.customerRatingForm.customerSelection.$pristine" class="help-block">A Selection is Required!</small>
+                    </div>
+                    <div class="form-group m-l-30" ng-class="{'has-error' : cr.customerRatingForm.customerRating.$error.required && !cr.customerRatingForm.customerRating.$pristine}">
+                        <label for="customerRating"><strong>2) Select Rating</strong></label>
+                        <ng-rate-it star-width="20" star-height="20" id="customerRating" name="customerRating" ng-model="cr.rating.rating" required> ></ng-rate-it>
+                        @*  this is code for my own drop down without use the rate it stars:
+                            <select class="form-control" id="customerRating" name="customerRating" ng-model="cr.rating.rating" ng-options="rating as rating.number for rating in cr.customerRating" ng-change="cr.ratingChanged()" required>
+                                <option value="">Choose a Rating</option>
+                            </select>*@
+                        <small ng-show="cr.customerRatingForm.customerRating.$error.required  && !cr.customerRatingForm.customerRating.$pristine" class="help-block">A Selection is Required!</small>
+                    </div>
+                    <div class="p-l-30">
+                        <label for="cardSelection"><strong>Comments About Customer (optional):</strong></label>
+                    </div>
+                    <div class="p-l-15 col-md-6 form-group">
+                        <div class="p-l-15 fg-line">
+                            <textarea class="form-control" placeholder="Type your notes here" id="comment" rows="5" ng-model="cr.rating.note"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary m-t-30" id="transactionSubmit" ng-disabled="cr.customerRatingForm.$invalid" ng-submit="cr.submitForm()">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-12"><h1>Customer Rating Table</h1></div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped address-table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Date Created</th>
+                            <th>Rating</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tr class="addressPosting" data-ng-repeat="cust in cr.customerRatings">
+                        <td class="customerName">{{cust.firstName}} {{cust.lastName}}</td>
+                        <td class="dateCreated">{{cust.dateCreated  | utcToLocal:"MM/dd/yyyy 'at' h:mma"}}</td>
+                        <td class="Rating"><ng-rate-it star-width="20" star-height="20" ng-model="cust.rating" read-only="true"></ng-rate-it></td>
+                        <td class="Note">{{cust.note}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="modalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Error! Please retry rating the customer.</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="mc.cancel()">Ok</button>
+    </div>
+</script>
+
+@section pageInitScripts {
+    <script src="~/Assets/Themes/bringpro/js/modules/bringpro.module.ngRateIt.js"></script>
+    <link href="~/Assets/bower_components/angular-rateit/dist/ng-rateit.css" rel="stylesheet" />
+    <script src="~/Assets/bower_components/angular-rateit/dist/ng-rateit.js"></script>
+}
+
+@section Scripts {
+    <script src="~/Assets/App/Services/bringpro.services.customerRating.js"></script>
+    <script src="~/Assets/App/Services/bringpro.services.billing.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/filters/bringpro.filters.utcToLocal.js"></script>
+    <script type="text/javascript">
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                 .factory('$customerRatingService', CustomerRatingServiceFactory);
+
+            CustomerRatingServiceFactory.$inject = ['$baseService', '$bringpro'];    //  $bringpro is a reference to bringpro.page object which is created in bringpro.js
+
+            function CustomerRatingServiceFactory($baseService, $bringpro) {
+
+                var aBringproServiceObject = bringpro.services.customerRating;
+                var customerRatingService = $baseService.merge(true, {}, aBringproServiceObject, $baseService);
+                console.log("customerRating service", aBringproServiceObject);
+                return customerRatingService;
+            }
+
+        })();
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                 .factory('$billingService', BillingServiceFactory);
+
+            BillingServiceFactory.$inject = ['$baseService', '$bringpro'];
+
+            function BillingServiceFactory($baseService, $bringpro) {
+
+                var aBringproServiceObject = bringpro.services.billing;
+                var billingService = $baseService.merge(true, {}, aBringproServiceObject, $baseService);
+                console.log("billing service", aBringproServiceObject);
+                return billingService;
+            }
+
+        })();
+
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('customerRatingController', CustomerRatingController)
+                .filter('utcToLocal', Filter);
+
+            CustomerRatingController.$inject = ['$scope', '$baseController', '$billingService', '$customerRatingService', '$uibModal'];
+
+            function CustomerRatingController(
+                $scope
+                , $baseController
+                , $billingService
+                , $customerRatingService
+                , $uibModal) {
+
+                var vm = this;//this points to a new {}
+                vm.users = {};
+                //this is for a drop down rating rather than using the rate-it stars
+                vm.customerRating = [{ number: 1 }, { number: 1.5 }, { number: 2 }, { number: 2.5 }, { number: 3 }, { number: 3.5 }, { number: 4 }, { number: 4.5 }, { number: 5 }];
+                vm.payload = {};
+                vm.customerRatings = null;
+
+
+                //instantiate values
+                vm.$billingService = $billingService;
+                vm.$customerRatingService = $customerRatingService;
+                vm.$scope = $scope;
+                vm.$uibModal = $uibModal;
+
+
+                //hoists
+                vm.userIdChanged = _userIdChanged;
+                vm.ratingChanged = _ratingChanged;
+                vm.submitForm = _submitForm;
+
+
+                //-- this line to simulate inheritance
+                $baseController.merge(vm, $baseController);
+
+                //this is a wrapper for our small dependency on $scope
+                vm.notify = vm.$billingService.getNotifier($scope);
+                vm.notify = vm.$customerRatingService.getNotifier($scope);
+
+              
+                render();
+                console.log('this is the vm.currentUser object: ', vm.currentUser);
+
+                function render() {
+                    _getCustomerWithCC();
+                    _getAllCustomerRatings();
+                }
+
+                function _getCustomerWithCC() {
+                    vm.$billingService.getAllCustomerWithCC(_getAllCustomerWithCCSuccess, _getAllCustomerWithCCError);
+                }
+
+
+                function _getAllCustomerWithCCSuccess(data) {
+                    vm.notify(function () {
+                        vm.users = data.items;
+                        console.log("Customer List:", vm.users);
+                    });
+                }
+
+                function _getAllCustomerWithCCError(jqXhr, error) {
+                    console.error(error);
+                }
+
+                function _getAllCustomerRatings() {
+                    vm.$customerRatingService.getAll(_getAllCustomerRatingsSuccess, _getAllCustomerRatingsFail);
+                }
+
+                function _getAllCustomerRatingsSuccess(data) {
+                    console.log("Get All Customer Ratings Sucess");
+                    vm.notify(function () {
+                        vm.customerRatings = data.items;
+                        console.log('get all success', vm.customerRatings);
+                    });
+                }
+
+                function _getAllCustomerRatingsFail() {
+                    console.log("Get All Customer Ratings Fail");
+                }
+
+                function _userIdChanged() {
+
+                    console.log('userIdChange to:', vm.rating.userId);
+                }
+
+                function _ratingChanged() {
+                    console.log('this is the object now bound by ng-options: ', vm.rating);
+                    console.log('rating change to: ', vm.rating.rating.number);
+                }
+
+                function _submitForm() {
+                    console.log('vm.rating is:  ', vm.rating);
+                    vm.$customerRatingService.insert(vm.rating, _onInsertSuccess, _onInsertFail);
+                }
+
+                function _onInsertSuccess() {
+                    console.log("Insert Success");
+                    vm.$alertService.success('Customer Rated', 'Success!');
+                    //resets value to make form look new
+                    _getCustomerWithCC();
+                    vm.rating = null;
+                    _getAllCustomerRatings();
+                    vm.customerRatingForm.$setPristine();
+
+                }
+
+                function _onInsertFail() {
+                    console.log("Insert Fail");
+                    _openModal();
+                }
+
+                function _openModal() {
+
+                    var modalInstance = vm.$uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalContent.html',     //  this tells it what html template to use. it must exist in a script tag OR external file
+                        controller: 'modalController as mc',  //  this controller must exist and be registered with angular for this to work
+                        size: 'sm',
+                        resolve: {                           //  anything passed to resolve can be injected into the modal controller as shown below
+                            items: function () {
+                                //return vm.modalItems;
+                            }
+                        }
+                    });
+
+                    //  when the modal closes it returns a promise
+                    modalInstance.result.then(function () {
+                        console.log('Modal dismissed at: ' + new Date()); //  if the user closed the modal by clicking cancel
+                    });
+                }
+            }
+        }
+        )();
+
+
+        //  wrap this whole controller in an IIFE like always
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('modalController', ModalController);
+
+            //  $uibModalInstance is coming from the UI Bootstrap library and is a reference to the modal window itself so we can work with it
+            //  items is the array passed in from the main controller above through the resolve property
+            ModalController.$inject = ['$scope', '$baseController', '$uibModalInstance']
+
+            function ModalController(
+                $scope
+                , $baseController
+                , $uibModalInstance
+                ) {
+
+                var vm = this;
+
+                $baseController.merge(vm, $baseController);
+
+                vm.$scope = $scope;
+                vm.$uibModalInstance = $uibModalInstance;
+
+                vm.cancel = function () {
+                    vm.$uibModalInstance.dismiss('cancel');
+
+                };
+            }
+        })();
+
+    </script>
+}

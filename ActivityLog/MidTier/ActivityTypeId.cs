@@ -1,4 +1,4 @@
-﻿namespace Sabio.Web.Enums
+﻿namespace Bringpro.Web.Enums
 {
     public enum ActivityTypeId:int
     {
@@ -14,8 +14,5 @@
         BringgTaskStatusUpdated =10,
         Credits = 11,
         CreditsFriend = 12
-
-
-
     }
 }

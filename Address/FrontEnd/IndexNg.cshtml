@@ -1,0 +1,248 @@
+﻿@model bringpro.Web.Models.ViewModels.BaseViewModel
+@{
+    ViewBag.Title = "IndexNg";
+    Layout = "~/Views/Shared/_BringProLayout.cshtml";
+}
+
+
+
+<div data-ng-controller="addressController as dashboard" id="addressController">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-8"><h1>Address Table</h1></div>
+                    <div class="col-md-4" id="addAddressButton">
+                        <div class="p-t-30 p-r-40">
+                            <a href="/address/create" class="btn btn-primary pull-right m-r-25 addAddress">Add New Address</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped address-table">
+                    <thead>
+                        <tr>
+                            <th>Address Id</th>
+                            <th>User Id</th>
+                            <th>Name</th>
+                            <th>Line 1</th>
+                            <th>City</th>
+                        </tr>
+                    </thead>
+                    <tr class="addressPosting" data-ng-repeat="add in dashboard.addresses">
+                        <td class="addressId">{{add.addressId}}</td>
+                        <td class="userId">{{add.userId}}</td>
+                        <td class="name">{{add.name}}</td>
+                        <td class="line1">{{add.line1}}</td>
+                        <td class="city">{{add.city}}</td>
+                        <td class="edit"><a class="editClick btn btn-default" ng-click="dashboard.editAddress(add.addressId)">Edit</a></td>
+                        <td class="delete"><button class="deleteButton btn btn-danger" ng-click="dashboard.onDeleteClick(add.addressId)">Delete</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="modalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Are you sure you want to delete?</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="mc.ok()">OK</button>
+        <button class="btn btn-warning" ng-click="mc.cancel()">Cancel</button>
+    </div>
+</script>
+
+@section scripts {
+
+    <script src="~/Assets/App/Services/bringpro.services.address.js"></script>
+    <script type="text/javascript">
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                 .factory('$addressService', AddressServiceFactory);
+
+            AddressServiceFactory.$inject = ['$baseService', '$bringpro'];    //  bringpro is a reference to bringpro.page object which is created in bringpro.js
+
+            function AddressServiceFactory($baseService, $bringpro) {
+
+                var aBringproServiceObject = bringpro.services.address;
+
+                var newService = $baseService.merge(true, {}, aBringproServiceObject, $baseService);
+
+                console.log("address service", aBringproServiceObject);
+
+                return newService;
+            }
+
+        })();
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('addressController', AddressController);
+
+            AddressController.$inject = ['$scope', '$baseController', '$addressService', '$uibModal'];
+
+            function AddressController(
+                $scope
+                , $baseController
+                , $addressService
+                , $uibModal) {
+
+                //  controllerAs with vm syntax: https://github.com/johnpapa/angular-styleguide#style-y032
+                var vm = this;//this points to a new {}
+                vm.headingInfo = "Angular 101";
+                vm.addresses = null;
+                vm.selectedAddress = null;
+                vm.addressIdClicked = null;
+
+                vm.$addressService = $addressService;
+                vm.$scope = $scope;
+                vm.$uibModal = $uibModal;
+
+                //  modal directive
+                vm.modalSelected = null;
+                vm.modalItems = ['item1', 'item2', 'item3'];
+
+                //  bindable members (functions) always go up top while the "meat" of the functions go below: https://github.com/johnpapa/angular-styleguide#style-y033
+                vm.getAllSuccess = _getAllSuccess;
+                vm.selectAddress = _selectAddress;
+                vm.onGetAllError = _onGetAllError;
+                vm.editAddress = _editAddress;
+                vm.deleteAddress = _deleteAddress;
+                vm.onDeleteSuccess = _onDeleteSuccess;
+                vm.onDeleteError = _onDeleteError;
+
+                vm.openModal = _openModal;
+                vm.onDeleteClick = _onDeleteClick;
+
+
+                //-- this line to simulate inheritance
+                $baseController.merge(vm, $baseController);
+
+                //this is a wrapper for our small dependency on $scope
+                vm.notify = vm.$addressService.getNotifier($scope);
+
+                render();
+                console.log('This is the vm.currentUser object:', vm.currentUser);
+
+                function render() {
+                    //  defer data operations into an external service: https://github.com/johnpapa/angular-styleguide#style-y035
+                    vm.$addressService.getAll(vm.getAllSuccess, vm.onGetAllError);
+                }
+
+                function _getAllSuccess(data) {
+                    //this receives the data and calls the special
+                    //notify method that will trigger ng to refresh UI
+                    vm.notify(function () {
+                        vm.addresses = data.items;
+                        console.log('get all success');
+                    });
+                }
+
+                function _selectAddress(anAddress) {
+                    console.log(anAddress);
+                    vm.selectedEmployee = anAddress;
+                }
+
+                function _onGetAllError(jqXhr, error) {
+                    console.error(error);
+                }
+
+                function _editAddress(addressId) {
+                    window.location.href = '/address/edit/' + addressId;
+                }
+
+                function _onDeleteClick(addressId) {
+                    vm.addressIdClicked = addressId;
+                    console.log("Clicked a delete button. Id: ", addressId);
+                    vm.openModal();
+                }
+                function _deleteAddress(addressId) {
+                    vm.$addressService.delete(addressId, vm.onDeleteSuccess, vm.onDeleteError);
+                }
+
+                function _onDeleteSuccess(data) {
+                    console.log('data: ', data);
+                    render();
+                }
+
+                function _onDeleteError(data) {
+                    console.log('on delete error');
+                }
+
+                function _openModal() {
+                    var modalInstance = vm.$uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalContent.html',     //  this tells it what html template to use. it must exist in a script tag OR external file
+                        controller: 'modalController as mc',  //  this controller must exist and be registered with angular for this to work
+                        size: 'sm',
+                        resolve: {                           //  anything passed to resolve can be injected into the modal controller as shown below
+                            items: function () {
+                                return vm.modalItems;
+                            }
+                        }
+                    });
+
+                    //  when the modal closes it returns a promise
+                    modalInstance.result.then(function () {
+                        console.log("current Id when delete is clicked: ", vm.addressIdClicked);
+                        vm.$addressService.delete(vm.addressIdClicked, vm.onDeleteSuccess, vm.onDeleteError);
+                    }, function () {
+                        console.log('Modal dismissed at: ' + new Date()); // if the user closed the modal by clicking cancel
+                    });
+                }
+
+            }
+
+        })();
+
+
+        //  wrap this whole controller in an IIFE like always
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('modalController', ModalController);
+
+            //  $uibModalInstance is coming from the UI Bootstrap library and is a reference to the modal window itself so we can work with it
+            //  items is the array passed in from the main controller above through the resolve property
+            ModalController.$inject = ['$scope', '$baseController', '$uibModalInstance', 'items']
+
+            function ModalController(
+                $scope
+                , $baseController
+                , $uibModalInstance
+                , items) {
+
+                var vm = this;
+
+                $baseController.merge(vm, $baseController);
+
+                vm.$scope = $scope;
+                vm.$uibModalInstance = $uibModalInstance;
+
+                //  $uibModalInstance is used to communicate and send data back to main controller
+                vm.ok = function () {
+                    vm.$uibModalInstance.close();
+                };
+
+                vm.cancel = function () {
+                    vm.$uibModalInstance.dismiss('cancel');
+                };
+            }
+        })();
+
+
+    </script>
+}
+

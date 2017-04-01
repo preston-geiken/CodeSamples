@@ -1,0 +1,85 @@
+ALTER proc [dbo].[Address_Insert]
+			@UserId nvarchar(128) = null
+			,@Name nvarchar(50) = null
+			,@ExternalPlaceId  nvarchar(128) = null
+			,@Line1 nvarchar(50) = null
+			,@Line2 nvarchar(50) = null
+			,@City nvarchar(50) = null 
+			,@State nvarchar(50) = null
+			,@StateId int = null
+			,@ZipCode int = null
+			,@Country nvarchar(50) = null
+			,@Latitude decimal(9, 6) = null
+			,@Longitude decimal(9, 6) = null
+			,@AddressId int OUTPUT
+
+as
+
+
+BEGIN
+
+INSERT INTO [dbo].[Address]
+			([UserId]
+			,[Name]
+			,[ExternalPlaceId]
+           ,[Line1]
+		   ,[Line2]
+           ,[City]
+		   ,[State]
+           ,[StateId]
+           ,[ZipCode]
+		   ,[Country]
+		   ,[Latitude]
+		   ,[Longitude]
+		   )
+     VALUES
+           (@UserId
+		   ,@Name
+		   ,@ExternalPlaceId
+           ,@Line1
+		   ,@Line2
+           ,@City
+		   ,@State
+           ,@StateId
+           ,@ZipCode
+		   ,@Country
+		   ,@Latitude
+		   ,@Longitude)
+
+	SET @AddressId = SCOPE_IDENTITY();
+	
+END
+
+/*	TEST CODE
+
+
+	Declare @Name nvarchar(50) = 'Test Person'
+			,@ExternalPlaceId nvarchar(128) = 99
+			,@Line1 nvarchar(50) = '1598 Newport Beach'
+			,@Line2 nvarchar(50) = 'Room 36'
+			,@City nvarchar(50) = 'Newport Beach'
+			,@State nvarchar(50) = 'California'
+			,@StateId int = 9
+			,@ZipCode int = 92662
+			,@Country nvarchar(50) = 'US'
+			,@Latitude decimal(9, 6) = 123.123456
+			,@Longitude decimal(9, 6) = 123.123456
+	
+	Exec dbo.Address_Insert  @Name
+							,@ExternalPlaceId  
+							,@Line1 
+							,@Line2 
+							,@City 
+							,@State
+							,@StateId 
+							,@ZipCode
+							,@Country
+							,@Latitude
+							,@Longitude
+						
+	
+
+	Select *
+	From dbo.Address
+	WHERE AddressId = @AddressId
+*/

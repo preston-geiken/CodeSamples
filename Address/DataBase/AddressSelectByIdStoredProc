@@ -1,0 +1,31 @@
+ALTER proc [dbo].[Address_SelectById]
+		@AddressId int
+as
+
+BEGIN
+
+	SELECT [AddressId]
+		  ,[DateCreated]
+		  ,[DateModified]
+		  ,[UserId]
+		  ,[Name]
+		  ,[ExternalPlaceId]
+		  ,[Line1]
+		  ,[Line2]
+		  ,[City]
+		  ,[StateId]
+		  ,[ZipCode]
+		  ,[Latitude]
+		  ,[Longitude]
+	  FROM [dbo].[Address]
+
+	  WHERE AddressId = @AddressId
+	
+
+	
+/*  TEST CODE
+
+  Declare @AddressId int = 6
+  exec Address_SelectById @AddressId
+
+*/

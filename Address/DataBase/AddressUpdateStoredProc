@@ -1,0 +1,80 @@
+ALTER proc [dbo].[Address_Update]
+              @UserId nvarchar(50) = null
+			  ,@Name nvarchar(50) = null
+			  ,@ExternalPlaceId nvarchar(128) = null
+			  ,@Line1 nvarchar(50) = null
+			  ,@Line2 nvarchar(50) = null
+			  ,@City nvarchar(50) = null
+			  ,@StateId int = null
+			  ,@ZipCode int = null
+			  ,@Country nvarchar(50) = null
+		      ,@Latitude decimal(9,6) = null
+			  ,@Longitude decimal(9, 6) = null
+			  ,@AddressId int = null
+as
+
+BEGIN
+
+	Declare @datNow datetime2 = getutcdate();
+
+	UPDATE [dbo].[Address]
+	   SET [DateModified] = @datNow
+		  ,[UserId] = @UserId
+		  ,[Name] = @Name
+		  ,[ExternalPlaceId] = @ExternalPlaceId
+		  ,[Line1] = @Line1
+		  ,[Line2] = @Line2
+		  ,[City] = @City
+		  ,[StateId] = @StateId
+		  ,[ZipCode] = @ZipCode
+		  ,[Country] = @Country
+		  ,[Latitude] = @Latitude
+		  ,[Longitude] = @Longitude
+
+	 WHERE AddressId = @AddressId
+
+END
+
+/*  TEST CODE:
+
+
+	Declare @AddressId int = 97
+	
+	Select *
+	From dbo.Address
+	WHERE AddressId = @AddressId
+
+	Declare  @UserId nvarchar(128) = 99 
+			,@Name nvarchar(50) = 'Updated Name'
+			,@ExternalPlaceId nvarchar(128) = '1agaadf'
+			,@Line1 nvarchar(50) = 'Updated Line 1'
+			,@Line2 nvarchar(50) = 'Upaded Line 2'
+			,@City nvarchar(50)=  'Laguna Beach'
+			,@StateId int = 10
+			,@ZipCode int = 90210
+			,@Latitude decimal (9, 6) = 38.897676
+			,@Longitude decimal(9, 6) = -77.036530
+
+	
+	Exec dbo.Address_Update              	@UserId
+											,@Name
+											,@ExternalPlaceId
+											,@Line1
+											,@Line2
+											,@City
+											,@StateId
+											,@ZipCode
+											,@Latitude
+											,@Longitude
+											,@AddressId
+
+	Select *
+	From dbo.Address
+	WHERE AddressId = @AddressId
+
+*/
+
+
+
+
+

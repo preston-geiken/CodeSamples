@@ -1,0 +1,582 @@
+﻿@model Bringpro.Web.Models.ViewModels.ItemViewModel<int?>
+
+@{
+    Layout = "~/Views/Shared/_BringProLayout.cshtml";
+}
+<head>
+    <style>
+        #map-canvas {
+            width: 100%;
+            height: 400px;
+        }
+
+        .container {
+            padding-top: 5.5px;
+        }
+
+        .card-header {
+            padding-top: 30px;
+        }
+
+        #delete-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <input type="hidden" id="addressIdNumber" value="@Model.Item" />
+</div>
+
+
+<div data-ng-controller="addressController as dashboard" id="addressController">
+    <div class="container">
+        <div class="card">
+            <form class="form-horizontal" id="address-form" role="form" name="addressForm" ng-submit="dashboard.submitForm(addressForm.$valid)" novalidate>
+                <div class="card-header">
+                    <div id="map-canvas"></div>
+                    <div class="row">
+                        <div class="col-md-8"><h1>Address Form</h1></div>
+                        <div class="col-md-4">
+                            <button type="button"
+                                    id="delete-button"
+                                    class="btn pull-right btn-danger deleteAddress"
+                                    ng-show="dashboard.deleteButtonShow"
+                                    ng-click="dashboard.deleteClick(dashboard.address.addressId)">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body card-padding">
+                    <div class="address">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="addressId input-lg form-control fg-input"
+                                               name="AddressId"
+                                               disabled
+                                               ng-model="dashboard.address.addressId">
+                                        <label class="fg-label">Address Id</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="userId input-lg form-control fg-input"
+                                               name="UserId"
+                                               disabled
+                                               ng-model="dashboard.address.userId">
+                                        <label class="fg-label">User Id</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error' : addressForm.name.$invalid && !addressForm.name.$pristine && !dashboard.addressConfirmed }">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="name input-lg form-control fg-input"
+                                               name="name"
+                                               ng-model="dashboard.address.name"
+                                               required>
+                                        <label class="fg-label">Name</label>
+                                        <p ng-show="addressForm.name.$invalid && !addressForm.name.$pristine && !dashboard.addressConfirmed" class="help-block">Your name is required.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="externalPlaceId input-lg form-control fg-input"
+                                               name="ExternalPlaceId"
+                                               disabled
+                                               ng-model="dashboard.address.externalPlaceId">
+                                        <label class="fg-label">External Place Id</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error' : addressForm.line1.$invalid && !addressForm.line1.$pristine && !dashboard.addressConfirmed}">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="line1 input-lg form-control fg-input"
+                                               id="line1" name="line1"
+                                               ng-model="dashboard.address.line1"
+                                               required>
+                                        <label class="fg-label">Line1</label>
+                                        <p ng-show="addressForm.line1.$invalid && !addressForm.line1.$pristine && !dashboard.addressConfirmed" class="help-block">Line 1 is required.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="line2 input-lg form-control fg-input"
+                                               name="Line2"
+                                               ng-model="dashboard.address.line2">
+                                        <label class="fg-label">Line 2</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error' : addressForm.city.$invalid && !addressForm.city.$pristine && !dashboard.addressConfirmed }">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="city input-lg form-control fg-input"
+                                               id="city" name="city"
+                                               ng-model="dashboard.address.city"
+                                               required>
+                                        <label class="fg-label">City</label>
+                                        <p ng-show="addressForm.city.$invalid && !addressForm.city.$pristine && !dashboard.addressConfirmed" class="help-block">City is required.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error' : addressForm.stateId.$invalid && !addressForm.stateId.$pristine && !dashboard.addressConfirmed }">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="stateId input-lg form-control fg-input"
+                                               name="stateId"
+                                               ng-model="dashboard.address.stateId"
+                                               ng-minlength="1"
+                                               ng-maxlength="3"
+                                               required
+                                               ng-pattern="/\d/" />
+                                        <label class="fg-label">State ID</label>
+                                        <p ng-show="addressForm.stateId.$invalid && !addressForm.stateId.$pristine && !dashboard.addressConfirmed" class="help-block">State Id is required.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error' : addressForm.zipCode.$invalid && !addressForm.zipCode.$pristine && !dashboard.addressConfirmed }">
+                                    <div class="fg-line">
+                                        <input type="text"
+                                               class="zipCode input-lg form-control fg-input"
+                                               name="zipCode"
+                                               ng-model="dashboard.address.zipCode"
+                                               ng-minlength="5"
+                                               ng-maxlength="5"
+                                               required
+                                               ng-pattern="/\d/">
+                                        <label class="fg-label">Zip Code</label>
+                                        <p ng-show="addressForm.zipCode.$invalid && !addressForm.zipCode.$pristine && !dashboard.addressConfirmed" class="help-block">Zip code is required and must be five digits.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-b-30">
+                            <div>
+                                <button type="button" class="btn pull-left btn-primary showMap p-r-5" id="showMapButton" ng-click="dashboard.updateMap()" ng-disabled="userForm.$invalid">Confirm</button>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn pull-left btn-success addAddress" id="submitButton" ng-disabled="addressForm.$invalid || !dashboard.addressConfirmed">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="modalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Are you sure you want to delete?</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="mc.ok()">OK</button>
+        <button class="btn btn-warning" ng-click="mc.cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="modalContentAlert.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Geocode was not successful for the following reason: <span class="error-status">{{alert.error}}</span> </h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="alert.cancel()">Ok</button>
+    </div>
+</script>
+
+
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRXil4nUhHPLQ8Oo0B2anOLoxBLTlHS_Y"></script>
+    <script src="~/Assets/App/Services/bringpro.services.address.js"></script>
+    <script type="text/javascript">
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                 .factory('$addressService', AddressServiceFactory);
+
+            AddressServiceFactory.$inject = ['$baseService', '$bringpro'];    //  $bringpro is a reference to bringpro.page object which is created in bringpro.js
+
+            function AddressServiceFactory($baseService, $bringpro) {
+
+                var aBringproServiceObject = bringpro.services.address;
+
+                var newService = $baseService.merge(true, {}, aBringproServiceObject, $baseService);
+
+                console.log("address service", aBringproServiceObject);
+
+                return newService;
+            }
+
+        })();
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('addressController', AddressController)
+
+
+            AddressController.$inject = ['$scope', '$baseController', '$addressService', '$baseService', '$uibModal'];
+
+
+            function AddressController(
+                $scope
+                , $baseController
+                , $addressService
+                , $baseService
+                , $uibModal) {
+
+                //  controllerAs with vm syntax: https://github.com/johnpapa/angular-styleguide#style-y032
+                var vm = this;//this points to a new {}
+
+                //-- this line to simulate inheritance
+                $baseController.merge(vm, $baseController);
+
+                vm.address = null;
+                vm.addressId = $("#addressIdNumber").val();
+                vm.geocoder = null;
+                vm.map = null;
+                vm.geocodeResponse = null;
+                vm.addressConfirmed = false;
+                vm.deleteButtonShow = false;
+
+
+                vm.$addressService = $addressService;
+                vm.$scope = $scope;
+                vm.$uibModal = $uibModal;
+
+                //  bindable members (functions) always go up top while the "meat" of the functions go below: https://github.com/johnpapa/angular-styleguide#style-y033
+                vm.submitForm = _submitForm;
+                vm.getById = _getById
+                vm.deleteAddress = _deleteAddress;
+                vm.onCodeAddress = _codeAddress;
+                vm.updateMap = _updateMap;
+
+                vm.openModal = _openModal;
+                vm.deleteClick = _deleteClick;
+                vm.openModalAlert = _openModalAlert;
+
+                //this is a wrapper for our small dependency on $scope
+                vm.notify = vm.$addressService.getNotifier($scope);
+
+                //this is like the bringpro.startUp function
+                render();
+                console.log('this is the vm.currentUser object', vm.currentUser);
+
+
+                function render() {
+                    //  defer data operations into an external service: https://github.com/johnpapa/angular-styleguide#style-y035
+                    console.log('rendering...');
+                    _initializeMap();
+
+                    if (vm.addressId && vm.addressId > 0) {
+                        console.log("(beginning) address confirmation is: " + vm.addressConfirmed);
+                        console.log('vm.addressIdNumber: ', vm.addressId);
+                        vm.addressId = $("#addressIdNumber").val();
+                        vm.getById(vm.addressId);
+                        vm.deleteButtonShow = true;
+                    }
+                }
+
+                function _getById(id) {
+                    console.log("Getting by id. id: " + id);
+                    vm.$addressService.getById(id, _getByIdSuccess, _getByIdError);
+                }
+
+                function _getByIdSuccess(data) {
+                    /*this receives the data and calls the special
+                    notify method that will trigger ng to refresh UI */
+                    vm.notify(function () {
+                        vm.address = data.item;
+                        console.log('get by id success');
+                        console.log('this is the vm.address object: ', vm.address);
+                        var latLng = { lat: vm.address.latitude, lng: vm.address.longitude };
+                        vm.map.setCenter(latLng);
+                        vm.map.setZoom(15);
+                        var marker = new google.maps.Marker({
+                            map: vm.map,
+                            position: latLng
+
+                        });
+                    });
+                }
+
+                function _initializeMap() {
+                    //this make geocoder -- the object that does all the work -- global
+                    vm.geocoder = new google.maps.Geocoder();
+                    //default map is a zoomed out display of orange county
+                    var latlng = new google.maps.LatLng(33.640517, -117.856106);
+                    var mapOptions = {
+                        zoom: 11,
+                        center: latlng
+                    }
+                    console.log('starting the map');
+                    vm.map = new google.maps.Map($('#map-canvas')[0], mapOptions);
+                }
+
+                function _codeAddress() {
+                    //this puts the address in geocoder
+                    var addressForGeoCoder = vm.address.line1 + ' ' + vm.address.city + ' ' + vm.address.zipCode;
+                    console.log('address for geocoder: ', addressForGeoCoder);
+                    vm.geocoder.geocode({ 'address': addressForGeoCoder }, _getCoordinates);
+                }
+
+                //this is the callback function from above
+                function _getCoordinates(results, status) {
+                    
+                    if (status == google.maps.GeocoderStatus.OK) { 
+                        //if the address is valid, then do this stuff:
+                        var geometry = results[0].geometry;
+                        var loc = geometry.location;
+
+                        console.log("got location data from API", loc);
+
+                        //this resets map
+                        vm.map.setCenter(loc);
+                        var marker = new google.maps.Marker({
+                            map: vm.map,
+                            position: loc
+                        });
+
+
+                        if (geometry.viewport)
+                            vm.map.fitBounds(geometry.viewport);
+
+                        var externalPlaceId = results[0].place_id;
+                        var lat = loc.lat();
+                        var lon = loc.lng();
+
+                        //this gets the data we need to insert to our database
+                        vm.notify(function () {
+                            console.log("found coordinates in reply -> (%s, %s)", lat, lon, externalPlaceId);
+                            vm.address.externalPlaceId = externalPlaceId;
+                            vm.address.latitude = lat;
+                            vm.address.longitude = lon;
+                            vm.addressConfirmed = true;
+                            console.log('address confirmed: ', vm.addressConfirmed);
+                        });
+
+                    } else {
+                        //this will show the error message in modal
+                        vm.addressConfirmed = false;
+                        vm.openModalAlert(status);
+
+                        console.log("addressConfirmed: " + vm.addressConfirmed);
+                    }
+                }
+
+                function _getByIdError() {
+                    console.log("Get by id error");
+                }
+
+                function _submitForm(isValid) {
+                    if (isValid) {
+                        if (vm.addressId && vm.addressId > 0) {
+                            console.log("UPDATE address data", vm.address);
+                            vm.$addressService.update(vm.addressId, vm.address, _onUpdateSuccess, _onUpdateError)
+                        } else {
+                            console.log("CREATE address data", vm.address);
+                            vm.$addressService.insert(vm.address, _onInsertSuccess, _onInsertError);
+                        }
+
+                    } else {
+                        console.log("form submitted with invalid data");
+                    }
+                }
+
+                function _onInsertSuccess() {
+                    console.log('Insert Success');
+                    window.location.href = "/address";
+                }
+
+                function _onInsertError() {
+                    console.log('Insert Error');
+                }
+
+                function _onUpdateSuccess() {
+                    console.log('Update Success');
+                    window.location.href = '/address/';
+                }
+
+                function _onUpdateError() {
+                    console.log('Update Error');
+                }
+
+                function _deleteClick(addressId) {
+                    vm.addressIdClicked = addressId;
+                    console.log("Clicked a delete button. Id: ", addressId);
+                    vm.openModal();
+                }
+
+                function _deleteAddress(addressId) {
+                    console.log('trying to delete...adressId: ' + addressId);
+                    vm.$addressService.delete(addressId, _onDeleteSuccess, _onDeleteError);
+                }
+
+                function _onDeleteSuccess(data) {
+                    console.log('data: ' + data);
+                    window.location.href = '/address/';
+                }
+
+                function _onDeleteError(data) {
+                    console.log('on delete error');
+                }
+
+                function _updateMap() {
+                    console.log("(final) address confirmation is: " + vm.addressConfirmed);
+                    _codeAddress();
+
+                }
+
+                function _openModal() { //this modal shows to confirm delete
+
+                    var modalInstance = vm.$uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalContent.html',     //  this tells it what html template to use. it must exist in a script tag OR external file
+                        controller: 'modalController as mc',  //  this controller must exist and be registered with angular for this to work
+                        size: 'sm',
+                        resolve: {                           //  anything passed to resolve can be injected into the modal controller as shown below
+                            items: function () {
+                            }
+                        }
+                    });
+
+                    //  when the modal closes it returns a promise
+                    modalInstance.result.then(function () {
+                        console.log("current Id when delete is clicked: ", vm.addressIdClicked);
+                        vm.deleteAddress(vm.addressIdClicked);
+                    }, function () {
+                        console.log('Modal dismissed at: ' + new Date()); // if the user closed the modal by clicking cancel
+                    });
+                }
+
+                function _openModalAlert(errorMessage) { //this modal shows the address error
+
+                    var modalAlert = vm.$uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalContentAlert.html',    
+                        controller: 'modalAlertController as alert',  
+                        size: 'sm',
+                        resolve: {                           
+                            error: function () {
+                                return errorMessage;
+
+                            }
+                        }
+                    });
+
+                    modalAlert.result.then(function () {
+                        console.log("current Id when delete is clicked: ", vm.addressIdClicked);
+                        vm.deleteAddress(vm.addressIdClicked);
+                    }, function () {
+                        console.log('Modal dismissed at: ' + new Date()); 
+                    });
+                }
+            }
+        })();
+
+        //  wrap this whole controller in an IIFE like always
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('modalController', ModalController);
+
+            //  $uibModalInstance is coming from the UI Bootstrap library and is a reference to the modal window itself so we can work with it
+            //  items is the array passed in from the main controller above through the resolve property
+            ModalController.$inject = ['$scope', '$baseController', '$uibModalInstance']
+
+            function ModalController(
+                $scope
+                , $baseController
+                , $uibModalInstance
+                ) {
+
+                var vm = this;
+
+                $baseController.merge(vm, $baseController);
+
+                vm.$scope = $scope;
+                vm.$uibModalInstance = $uibModalInstance;
+         
+
+                //  $uibModalInstance is used to communicate and send data back to main controller
+                vm.ok = function () {
+                    vm.$uibModalInstance.close();
+                };
+
+                vm.cancel = function () {
+                    vm.$uibModalInstance.dismiss('cancel');
+                };
+            }
+        })();
+
+        (function () {
+            "use strict";
+            angular.module(APPNAME)
+                    .controller('modalAlertController', ModalAlertController);
+
+            ModalAlertController.$inject = ['$scope', '$baseController', '$uibModalInstance', 'error']
+
+            function ModalAlertController(
+                $scope
+                , $baseController
+                , $uibModalInstance
+                , error) {
+
+                var vm = this;
+
+                $baseController.merge(vm, $baseController);
+
+                vm.$scope = $scope;
+                vm.$uibModalInstance = $uibModalInstance;
+                vm.error = error;
+
+                vm.cancel = function () {
+                    vm.$uibModalInstance.dismiss('cancel');
+                };
+            }
+
+        })();
+
+
+
+    </script>
+
+}

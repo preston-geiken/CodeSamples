@@ -1,0 +1,30 @@
+ALTER proc [dbo].[Address_SelectAll]
+
+as
+
+BEGIN
+
+	SELECT [AddressId]
+		  ,[DateCreated]
+		  ,[DateModified]
+		  ,[UserId]
+		  ,[Name]
+		  ,[ExternalPlaceId]
+		  ,[Line1]
+		  ,[Line2]
+		  ,[City]
+		  ,[StateId]
+		  ,[ZipCode]
+		  ,[Latitude]
+		  ,[Longitude]
+	  FROM [dbo].[Address]
+	
+END
+
+/* TEST CODE
+
+
+  exec Address_SelectAll
+  
+  
+*/

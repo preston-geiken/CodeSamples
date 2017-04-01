@@ -1,0 +1,28 @@
+ALTER proc [dbo].[Address_DeleteById]
+		@AddressId int
+as
+
+BEGIN
+
+		DELETE FROM [dbo].[Address]
+		WHERE AddressId = @AddressId
+
+END
+
+/*		TEST CODE
+
+
+		Declare @AddressId int = 2
+
+		Select *
+		From dbo.Address
+		WHERE AddressId = @AddressId
+
+		Exec dbo.Address_DeleteById @AddressId
+
+		Select *
+		From dbo.Address
+		WHERE AddressId = @AddressId
+		
+
+*/

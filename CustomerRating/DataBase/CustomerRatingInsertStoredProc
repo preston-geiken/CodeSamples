@@ -3,7 +3,7 @@ ALTER proc [dbo].[CustomerRating_Insert]
            ,@Rating decimal(3, 1)
            ,@Note nvarchar(MAX) = null
            ,@JobId int = null
-		   ,@Id int OUTPUT
+           ,@Id int OUTPUT
 
 as
 

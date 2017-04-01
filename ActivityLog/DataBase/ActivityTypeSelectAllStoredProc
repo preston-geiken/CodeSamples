@@ -67,8 +67,8 @@ END
 	Declare @Selector int = 7
 	Declare @userId nvarchar(128) = '7a223dfd-dce6-42a7-b4d5-6cde3a6652fc'
 	exec ActivityLog_SelectAllForSearchFourTables @CurrentPage
-												  ,@ItemsPerPage
-												  ,@Selector
+						      ,@ItemsPerPage
+						      ,@Selector
 
 	use this userId to find an example for Jobs database: 
 
@@ -77,7 +77,7 @@ END
 	Declare @Selector int = 7
 	Declare @userId nvarchar(128) = 'e957b7f9-62d5-4129-b90b-1dd9d94911b4'
 	exec ActivityLog_SelectAllForSearchFourTables @CurrentPage
-												  ,@ItemsPerPage
-												  ,@Selector
+						      ,@ItemsPerPage
+					              ,@Selector
 						  
 */

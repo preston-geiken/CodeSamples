@@ -1,9 +1,9 @@
 ALTER proc [dbo].[CustomerRating_Insert]
-		   @UserId nvarchar(128) = null
+	   @UserId nvarchar(128) = null
            ,@Rating decimal(3, 1)
            ,@Note nvarchar(MAX) = null
            ,@JobId int = null
-		   ,@Id int OUTPUT
+           ,@Id int OUTPUT
 
 as
 
@@ -24,7 +24,7 @@ Begin
 				   ,@Note
 				   ,@JobId)
 
-				   	SET @Id = SCOPE_IDENTITY();
+			SET @Id = SCOPE_IDENTITY();
 
 End
 
@@ -38,10 +38,10 @@ End
 				,@Id int = 0
 		
 		Exec [dbo].[CustomerRating_Insert]     @UserId
-											   ,@Rating 
-											   ,@Note 
-											   ,@JobId
-											   ,@Id OUTPUT 
+						       ,@Rating 
+						       ,@Note 
+						       ,@JobId
+						       ,@Id OUTPUT 
 
 		Select * 
 		From [dbo].[CustomerRating]

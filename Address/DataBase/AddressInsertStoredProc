@@ -22,29 +22,29 @@ INSERT INTO [dbo].[Address]
 			([UserId]
 			,[Name]
 			,[ExternalPlaceId]
-           ,[Line1]
-		   ,[Line2]
-           ,[City]
-		   ,[State]
-           ,[StateId]
-           ,[ZipCode]
-		   ,[Country]
-		   ,[Latitude]
-		   ,[Longitude]
-		   )
-     VALUES
-           (@UserId
-		   ,@Name
-		   ,@ExternalPlaceId
-           ,@Line1
-		   ,@Line2
-           ,@City
-		   ,@State
-           ,@StateId
-           ,@ZipCode
-		   ,@Country
-		   ,@Latitude
-		   ,@Longitude)
+           		,[Line1]
+		        ,[Line2]
+          	        ,[City]
+		        ,[State]
+           	        ,[StateId]
+                        ,[ZipCode]
+		        ,[Country]
+		        ,[Latitude]
+		        ,[Longitude]
+		  	 )
+     	VALUES
+          	 (@UserId
+		  ,@Name
+		  ,@ExternalPlaceId
+           	  ,@Line1
+		  ,@Line2
+           	  ,@City
+		  ,@State
+          	  ,@StateId
+           	  ,@ZipCode
+		  ,@Country
+		  ,@Latitude
+		  ,@Longitude)
 
 	SET @AddressId = SCOPE_IDENTITY();
 	
@@ -66,16 +66,16 @@ END
 			,@Longitude decimal(9, 6) = 123.123456
 	
 	Exec dbo.Address_Insert  @Name
-							,@ExternalPlaceId  
-							,@Line1 
-							,@Line2 
-							,@City 
-							,@State
-							,@StateId 
-							,@ZipCode
-							,@Country
-							,@Latitude
-							,@Longitude
+				 ,@ExternalPlaceId  
+				 ,@Line1 
+				 ,@Line2 
+				 ,@City 
+				 ,@State
+				 ,@StateId 
+				 ,@ZipCode
+				 ,@Country
+				 ,@Latitude
+				 ,@Longitude
 						
 	
 

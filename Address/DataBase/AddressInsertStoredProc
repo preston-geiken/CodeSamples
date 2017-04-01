@@ -32,7 +32,7 @@ INSERT INTO [dbo].[Address]
 		        ,[Latitude]
 		        ,[Longitude]
 		  	 )
-     VALUES
+     	VALUES
           	 (@UserId
 		  ,@Name
 		  ,@ExternalPlaceId

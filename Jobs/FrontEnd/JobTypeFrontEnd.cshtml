@@ -1,0 +1,298 @@
+﻿@model Bringpro.Web.Models.ViewModels.WebsiteViewModel
+
+@{
+    ViewBag.Title = "JobType";
+    Layout = "~/Views/Shared/_LayoutFrontEnd.cshtml";
+}
+
+<link href="~/Assets/Themes/Material-Admin/vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="~/Assets/bower_components/angular-google-places-autocomplete/src/autocomplete.css" rel="stylesheet" />
+<link href="~/Assets/bower_components/dropzone/downloads/css/basic.css" rel="stylesheet" />
+<link href="~/Assets/bower_components/dropzone/downloads/css/dropzone.css" rel="stylesheet" />
+
+<div class="container">
+    @*  we render the value from the model using this syntax *@
+    <input type="hidden" id="token" value="" />
+    <input type="hidden" id="lastTwo" value="" />
+    <input type="hidden" id="userId" value="" />
+    <input type="hidden" id="cardType" value="" />
+    <input type="hidden" id="clientCCToken" value="@Model.BrainTreeToken" />
+    <input type="hidden" id="websiteId" value="@Model.Website.Id" />
+    <div ng-view></div>
+</div>
+
+
+
+<style>
+    .credit-card-box .panel-title {
+        display: inline;
+        font-weight: bold;
+    }
+
+    .credit-card-box .form-control.error {
+        border-color: red;
+        outline: 0;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(255,0,0,0.6);
+    }
+
+    .credit-card-box label.error {
+        font-weight: bold;
+        color: red;
+        padding: 2px 8px;
+        margin-top: 2px;
+    }
+
+    .credit-card-box .payment-errors {
+        font-weight: bold;
+        color: red;
+        padding: 2px 8px;
+        margin-top: 2px;
+    }
+
+    .credit-card-box label {
+        display: block;
+    }
+    /* The old "center div vertically" hack */
+    .credit-card-box .display-table {
+        display: table;
+    }
+
+    .credit-card-box .display-tr {
+        display: table-row;
+    }
+
+    .credit-card-box .display-td {
+        display: table-cell;
+        vertical-align: middle;
+        width: 50%;
+    }
+    /* Just looks nicer */
+    .credit-card-box .panel-heading img {
+        min-width: 180px;
+    }
+
+
+    .job-container {
+        height: auto;
+        background-color: white;
+        border: 2px solid #185871;
+        margin-top: 20px;
+        border-radius: 2px;
+        text-align: center;
+    }
+
+    .job-title {
+        height: 200px;
+    }
+
+        .job-title h2 {
+            color: white;
+            font-size: 20px;
+            text-align: center;
+        }
+
+    .job-asap {
+        margin-bottom: 2%;
+    }
+
+    .job-schedule {
+        margin-bottom: 2%;
+    }
+
+    .job-icon {
+        padding: 0;
+        display: inline-block;
+    }
+
+        .job-icon:nth-child(2) {
+            margin: 0 auto;
+        }
+
+    .right-border {
+        border-right: 1px solid #BDD4DE;
+    }
+
+    .left-border {
+        border-left: 1px solid #3F5765;
+    }
+
+    .job-submit-button {
+        margin-top: 4%;
+    }
+
+    .row h3 {
+        text-align: center;
+    }
+
+    .job-button-right-border {
+        border-right: 1px solid #FCFFF5;
+    }
+
+    .job-button-left-border {
+        border-left: 1px solid #D1DBBD;
+    }
+
+    .time-slot-container {
+        width: 100%;
+        float: none;
+    }
+
+    .time-slots h6 {
+        color: white;
+    }
+
+    .activeJob {
+        background-color: #0C7CD5 !important;
+    }
+
+    .activeTime {
+        background-color: #0C7CD5 !important;
+    }
+
+    .select-style {
+        font-size: 1em;
+        position: relative;
+        display: inline-block;
+    }
+
+        .select-style select {
+            outline: none;
+            appearance: none;
+            -moz-appearance: none; /* Firefox */
+            -webkit-appearance: none; /* Safari and Chrome */
+            display: block;
+            padding: .3em 2.5em .3em 2em;
+            margin: 0;
+            transition: border-color 0.2s;
+            border: 2px solid #3F5765;
+            border-radius: 5px;
+            background: #fff;
+            color: #555;
+            line-height: normal;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .select-style .select-icon {
+            bottom: 5px;
+            position: absolute;
+            right: -15px;
+            top: 5px;
+            width: 50px;
+            pointer-events: none;
+        }
+
+            .select-style .select-icon:before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: 24px;
+                margin-top: -5px;
+                pointer-events: none;
+                border-top: 10px solid #EB5168;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+            }
+
+            .select-style .select-icon:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: 28px;
+                margin-top: -5px;
+                pointer-events: none;
+                border-top: 6px solid #fff;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+            }
+
+    .price-of-job {
+        font-size: 18px;
+        height: 30px;
+    }
+
+    .well {
+        opacity: .8;
+        background-color: #FCFFF5;
+    }
+</style>
+
+
+@section pageInitScripts {
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANeu-FIMTtcrjLrWznZbwrAoRcMsh5N-0&libraries=places"></script>
+    <script src="~/Assets/bower_components/angular-google-places-autocomplete/src/autocomplete.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/modules/bringpro.module.autocomplete.js"></script>
+    <script src="~/Assets/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/modules/bringpro.module.LocalStorageModule.js"></script>
+    <script src="~/Assets/bower_components/dropzone/downloads/dropzone.js"></script>
+
+    <script src="~/Assets/bower_components/angular-dropzone/lib/angular-dropzone.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/modules/bringpro.module.ngDropzone.js"></script>
+    <script type="text/javascript"> Dropzone.autoDiscover = false;</script>
+
+
+
+}
+
+@section Scripts {
+
+
+    <script src="~/Assets/Themes/bringpro/js/filters/bringpro.filters.phoneNumber.js"></script>
+    <script src="~/Assets/Themes/Material-Admin/vendors/bower_components/moment/min/moment.min.js"></script>
+    <script src="~/Assets/Themes/Material-Admin/vendors/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Assets/App/Services/bringpro.services.localStorage.js"></script>
+    <script src="~/Assets/bower_components/jStorage/jstorage.js"></script>
+    <script src="~/Assets/bower_components/jquery-ui/jquery-ui.js"></script>
+
+    <script src="~/Assets/Themes/bringpro/js/features/dashboard/controllers/userProfileCreditCardModals.js"></script>
+
+    @*<script src="https://js.braintreegateway.com/web/3.6.3/js/client.min.js"></script>*@
+    @*    <script src="https://js.braintreegateway.com/web/3.6.3/js/hosted-fields.min.js"></script>*@
+    @*    *@
+
+    <script src="https://js.braintreegateway.com/web/3.9.0/js/client.min.js"></script>
+
+    <!-- Load Hosted Fields component. -->
+    <script src="https://js.braintreegateway.com/web/3.9.0/js/hosted-fields.min.js"></script>
+
+    <script src="~/Assets/Themes/bringpro/js/features/jobs/controllers/jobFlowForm.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/features/jobs/controllers/requestDelivery.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/features/jobs/jobs.config.js"></script>
+
+    <script src="~/Assets/Themes/bringpro/js/services/jobsService.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/services/jobsServiceItemOptionsService.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/services/jobsScheduleService.js"></script>
+    <script src="~/Assets/Themes/bringpro/js/services/userCreditsService.js"></script>
+
+
+    <script type="text/template" id="job-description-template">
+        <div class="col-sm-12">
+            <p class="description"><b></b></p>
+            <p><b>Example:</b></p>
+            <ol>
+                <li class="example1"></li>
+                <li class="example2"></li>
+            </ol>
+        </div>
+    </script>
+
+
+    <script type="text/javascript">
+
+        //settings for local storage module -- it sets the prefix
+        (function () {
+            "use strict";
+            angular.module(APPNAME).config(function (localStorageServiceProvider) {
+                localStorageServiceProvider
+                    .setPrefix(APPNAME);
+            });
+        })();
+    </script>
+
+
+
+}
+

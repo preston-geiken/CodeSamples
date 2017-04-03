@@ -1,0 +1,434 @@
+﻿
+<div class="row">
+    <div class="col-xs-12">
+        <form name="addressForm" class="form-horizontal" role="form" novalidate>
+            <uib-accordion close-others="job.oneAtATime">
+                <div class="wayPoint" uib-accordion-group ng-repeat="wayPoint in job.wayPoints" is-open="job.wayPointAccordionPanels[$index].isOpen">
+                    <uib-accordion-heading>
+                        <h4>Enter Location<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': job.wayPointAccordionPanels[$index].isOpen, 'glyphicon-chevron-right': !job.wayPointAccordionPanels[$index].isOpen}"></i></h4>
+                    </uib-accordion-heading>
+                    <div class="card">
+                        <div class="card-header m-b-30">
+                            <h5 ng-if="$index > 0">Pickup item, Drop off item, or Both at this location.</h5>
+                            <h5 ng-if="$index == 0">Pickup items from this location.</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-xs-12 m-b-20">
+                                <button ng-click="job.togglePickupItems()" class="btn btn-block btn-primary waves-effect">Pickup Item</button>
+                                <div ng-show="job.showPickupItems" class="col-xs-12 m-t-20" ng-repeat="jobWaypointItemsPickup in job.wayPoints[$index].jobWaypointItemsPickup">
+                                    <div class="col-md-6 col-xs-12">
+                                        <div class="select-style m-b-15">
+                                            <span class="select-icon"></span>
+                                            <select ng-model="job.wayPoints[$parent.$index].jobWaypointItemsPickup[$index].itemTypeId"
+                                                    ng-options="jobWaypointItemsPickup.id as jobWaypointItemsPickup.name for jobWaypointItemsPickup in job.jobItems">
+                                                <option value="" selected disabled>Add Item</option>
+                                            </select>
+                                        </div>
+                                        <!-- this div is for the quantity dropdown-->
+                                        <div class="select-style m-b-15">
+                                            <span class="select-icon"></span>
+                                            <select ng-model="job.wayPoints[$parent.$index].jobWaypointItemsPickup[$index].quantity" ng-options="quantity for quantity in job.itemQuantity">
+                                                <option value="" selected disabled>Quantity</option>
+                                            </select>
+                                        </div>
+                                        <button ng-click="job.setCurrentItem(job.wayPoints[$parent.$index].jobWaypointItemsPickup[$index])" class="fileinput-button btn btn-success waves-effect" dropzone="job.dropzone" dropzone-config="job.dzOptions" callbacks="job.dzCallbacks" methods="dzMethods" ng-dropzone>
+                                            <i class="glyphicon glyphicon-camera fileinput-button" style="pointer-events:none;"></i>
+                                        </button>
+                                        <button ng-show="wayPoint.jobWaypointItemsPickup.length > 1"
+                                                class="btn btn-danger waves-effect"
+                                                ng-click="job.deletePickupItem(job.wayPoints[$parent.$index].jobWaypointItemsPickup, $index)">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 previewTemplate">
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <button ng-show="job.showPickupItems" type="button" class="btn btn-block btn-success waves-effect pull-right m-t-20" ng-click="job.addItem(job.wayPoints[$index].jobWaypointItemsPickup)">Add Item</button>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 m-b-30">
+                                <button ng-if="$index > 0" ng-click="job.toggleDropoffItems()" class="btn btn-block btn-primary waves-effect">Drop Off Item</button>
+                                <div ng-show="job.showDropOffItems" class="col-xs-12">
+                                    <div class="col-md-6 col-xs-12">
+                                        <div class="select-style m-b-15">
+                                            <div class="col-sm-9 pull-right" ng-repeat="jobWaypointItemsDropOff in job.itemsPickup">
+                                                <label for="jobWaypointItemsDropOff">
+                                                    <input type="checkbox" class=""
+                                                           name="jobWaypointItemsDropOff"
+                                                           ng-selected="job.isDropoffItemSelected(jobWaypointItemsDropOff.id)"
+                                                           ng-click="job.toggleItemForDropoff(jobWaypointItemsDropOff.id, job.wayPoints[$parent.$index].jobWaypointItemsDropOff)" />
+                                                    {{jobWaypointItemsDropOff.jobItem.name}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <button ng-show="job.showDropOffItems" type="button" class="btn btn-primary waves-effect" ng-click="job.addItem(job.wayPoints[$index].jobWaypointItemsDropOff)">Add Item</button>-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="fg-line">
+                                    <!--Google Auto Complete   ng-model that links to wayPoints.something-->
+                                    <input type="text" g-places-autocomplete ng-model="job.wayPoints[$index].address" class="form-control input-sm" id="" name="" placeholder="" required>
+                                    <label for="userFirstName" class="control-label"> Address or Business Name</label>
+                                    <!-- @*<p ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">First Name Required.</p>*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <!--@*ng-class="{'has-error' : userForm.firstName.$error.required && !userForm.firstName.$pristine}" *@-->
+                            <div class="col-sm-12">
+                                <div class="fg-line">
+                                    <input type="text" ng-model="job.wayPoints[$index].suiteNo" class="form-control input-sm" id="" name="" placeholder="">
+                                    <label for="userFirstName" class="control-label"> Suite/Apt #</label>
+                                    <!--@*<p ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">First Name Required.</p>*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="fg-line">
+                                    <input type="text" ng-model="job.wayPoints[$index].specialInstructions" class="form-control input-sm" id="" name="" placeholder="" required>
+                                    <label for="userFirstName" class="control-label"> Special Instructions (gate code, etc.)</label>
+                                    <!--@*<p ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">First Name Required.</p>*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="fg-line">
+                                    <input type="text" ng-model="job.wayPoints[$index].contactName" class="form-control input-sm" id="" name="" placeholder="" required>
+                                    <label for="userFirstName" class="control-label"> Contact Name</label>
+                                    <!-- @*<p ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">First Name Required.</p>*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="fg-line">
+                                    <input type="text" ng-model="job.wayPoints[$index].phone" class="form-control input-sm" id="" name="" placeholder="" required>
+                                    <label for="userFirstName" class="control-label"> Phone Number</label>
+                                    <!--@*<p ng-show="userForm.firstName.$error.required && !userForm.firstName.$pristine" class="help-block">First Name Required.</p>*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="pull-left col-sm-10">
+                                <button type="submit" id="" class="btn btn-danger waves-effect" ng-click="job.addAddress()">Add Another Address</button>
+                                <button type="submit" id="" class="btn btn-primary waves-effect" ng-click="job.submitJob(job.wayPoints[$index].jobWaypointItemsPickup)">Review</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden" data-comment-index-number="1545" data-index-number="56fg345saas1sd" id="dataStorageDiv"></div>
+                </div>
+
+
+                <div uib-accordion-group is-open="job.jobOverviewPanels.isOpen">
+                    <uib-accordion-heading>
+                        <h4>
+                            Job Overview
+                            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': job.jobOverviewPanels.isOpen, 'glyphicon-chevron-right': !job.jobOverviewPanels.isOpen}"></i>
+                        </h4>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div ng-repeat="overview in job.wayPoints" class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <small>Location {{$index + 1}}</small>
+                                    <h5>
+                                        {{overview.address.formatted_address}}<br />
+                                        <span>
+                                            <small ng-if="overview.suiteNo != null">Suite/Apt #: {{overview.suiteNo}}</small>
+                                        </span>
+                                    </h5>
+                                    <span class="pull-left"><b>Contact:</b> {{overview.contactName}}</span>
+                                    <span class="pull-right"><b>Phone:</b> {{overview.phone}}</span>
+                                </div>
+                                <div class="card-body card-padding">
+                                    <div ng-if="overview.itemOptionsPickup && overview.itemOptionsPickup.length">
+                                        <h5>Picking Up</h5>
+                                        <ul ng-repeat="itemOptionsPickup in overview.itemOptionsPickup">
+                                            <li>{{itemOptionsPickup.name}} x{{itemOptionsPickup.quantity}}</li>
+                                        </ul>
+                                    </div>
+                                    <div ng-if="overview.itemOptionsDropoff && overview.itemOptionsDropoff.length">
+                                        <h5>Dropping Off</h5>
+                                        <ul ng-repeat="itemOptionsDropoff in overview.itemOptionsDropoff">
+                                            <li>{{itemOptionsDropoff.name}} x{{itemOptionsDropoff.quantity}}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="m-b-15">
+                                        <span class="pull-left" ng-if="overview.serviceNote != null">Special Services: {{overview.serviceNote}}</span><br />
+                                        <span class="pull-left" ng-if="overview.specialInstructions != null">Special Instructions: {{overview.specialInstructions}}</span>
+                                    </div>
+                                    <div id="map-canvas"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr />
+
+
+                    <!--SCHEDULER SECTION-->
+                    <div class="row" ng-hide="job.hideTimeScheduler">
+                        <!--ASAP Job Section-->
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <h4>ASAP</h4>
+                                    <small ng-hide="job.asapUnavailable">Delivery service for Today, {{job.dateToday}}</small>
+                                    <small ng-show="job.asapUnavailable"><strong><em>We are currently unable to take any more ASAP Jobs for today.  We apologize for the inconvenience this may have caused!</em></strong></small>
+                                </div>
+                                <div class="card-body">
+                                    <a class="btn btn-block btn-danger asap-button center" ng-click="job.asapJob()" ng-hide="job.hideAsapButton" ng-disabled="job.asapUnavailable">Same Day Delivery</a>
+                                    <button class="btn btn-block btn-success schedule-submit-button" ng-show="job.showAsapSelectedButton">Same Day Delivery Selected</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Schedule Job Section-->
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <h4>Schedule</h4>
+                                    <small>Choose a Date and Pick the Best Available Time Slot</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="time-slot-container" ng-show="job.showDateTimePicker">
+                                        <div class="col-xs-12 p-b-15">
+                                            <button type="button" class="btn btn-block btn-primary" ng-click="job.openDatePicker()" uib-datepicker-popup ng-model="job.currentDate" is-open="job.datePicker" datepicker-options="job.dateFormat" ng-required="true" popup-placement="bottom" close-text="Close" alt-input-formats="altInputFormats" ng-change="job.onDateChange()"><span ng-hide="job.currentDate | date: 'fulldate'">Choose Date</span><span ng-if="job.currentDate | date: 'fulldate'">{{job.currentDate | date:'fullDate'}}</span></button>
+                                        </div>
+                                        <div class="col-xs-6" ng-repeat="jobTimeSlot in job.availableTimeSlotsByDate">
+                                            <button id="{{jobTimeSlot.id}}" class="btn btn-block btn-primary time-slots" ng-disabled="jobTimeSlot.disabled" ng-model="job.scheScheduleId" value="{{jobTimeSlot.id}}" ng-click="job.jobTimeButton(jobTimeSlot.id)" ng-class="{activeTime : job.activeTime == jobTimeSlot.id}">
+                                                <h6>{{jobTimeSlot.timeStart}} to {{jobTimeSlot.timeEnd}} Capacity: {{jobTimeSlot.capacity}}, Used: {{jobTimeSlot.usedCapacity}}</h6>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <a class="btn btn-block btn-danger asap-button center" ng-click="job.scheJob()" ng-hide="job.hideScheduleButton" ng-disabled="job.disableScheduleButton">Scheduled Delivery</a>
+                                    <button class="btn btn-block btn-success schedule-submit-button" ng-show="job.showScheduledSubmitButton" ng-click="job.submitTimeSelection()" ng-disabled="job.timeScheduleSubmit">Submit Time Selection</button>
+                                    <button class="btn btn-block btn-success schedule-submit-button" ng-show="job.showScheduledSelectedButton">Scheduled Delivery Selected for {{job.currentDate | date:'fullDate'}} at {{job.timeSlotOptionText}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-show="job.hideTimeScheduler">
+                        <!--ASAP Job Section-->
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <h4>ASAP - WE ARE CURRENTLY NOT AVAILABLE FOR DELIVERY</h4>
+                                </div>
+                                <div class="card-body">
+                                    <img src="http://www.desicomments.com/wp-content/uploads/2017/01/Sorry-600x600.jpg" />
+                                </div>
+                            </div>
+                        </div>
+                        <!--Schedule Job Section-->
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <h4>Scheduled - WE ARE CURRENTLY NOT AVAILABLE FOR DELIVERY</h4>
+                                </div>
+                                <div class="card-body">
+                                    <img src="http://www.desicomments.com/wp-content/uploads/2017/01/Sorry-600x600.jpg" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--END OF SCHEDULING SECTION-->
+
+                    <hr />
+
+                    <!--Credit/Promo Section-->
+                    <div class="row" ng-show="job.registeredUser()">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header" style="padding-bottom: 102px;">
+                                    <h4 style="padding-bottom: 30px">User Credits</h4>
+                                    <div class="form-group p-b-10 m-b-20" style="margin-bottom: 20px;">
+                                        <label for="creditSelect" class="control-label col-sm-12"><strong>Choose Your Credit:</strong></label>
+                                        <select class="col-sm-12" name="creditSelect" id="creditSelect">
+                                            <option value="">Select a Team</option>
+                                            <option ng-repeat="option in userCreditOptions"></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="z-depth-1">
+                                <div class="card-header">
+                                    <h4>Coupon Codes</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="couponInput" class="col-sm-12 control-label">
+                                            <strong>Enter Your Coupon:</strong>
+                                            <input type="text" class="form-control" id="couponInput" name="couponInput">
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-success btn-block" type="button" ng-click="job.submitCoupon()">Submit Coupon</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!--BILLING SECTION-->
+                    <!--Registered USER PAYMENT FORM-->
+                    <div class="row" ng-show="job.registeredUser()">
+                        <form ng-submit="job.submitPayment()" name="paymentForm" novalidate>
+                            <div class="col-xs-12 col-md-6">
+                                <div class="z-depth-1">
+                                    <div class="card-header">
+                                        <br />
+                                        <strong>Customer Information</strong>
+                                        <br />
+                                        <br />
+                                        <span class="pull-left"><b>FirstName:</b> {{job.currentUser.firstName}}</span><br />
+                                        <span class="pull-left"><b>Last Name:</b> {{job.currentUser.lastName}}</span><br />
+                                        <span class="pull-left"><b>Phone Number:</b> {{job.currentUser.phone | phoneNumber}}</span><br />
+                                        <span class="pull-left"><b>Email:</b> {{job.currentUser.email}}</span>
+                                        <br /><br /><br /><br /><br /><br /><br /><br />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-6 form-group" ng-class="{'has-error' : paymentForm.cardSelection.$error.required && !paymentForm.cardSelection.$pristine}">
+                                <div class="z-depth-1">
+                                    <div class="card-header">
+                                        <strong>Payment Information</strong><br />
+                                        <img class="img-responsive pull-left" src="http://i76.imgup.net/accepted_c22e0.png">
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <small>Your credit and debit cards</small>
+                                        <br />
+                                        <br />
+                                        <label for="cardSelection"><strong>Select a Card</strong></label><br />
+                                        <select class="form-control" id="cardSelection" name="cardSelection" ng-model="job.customerCards.externalCardIdNonce" required>
+                                            <option value="">Choose a card</option>
+                                            <option ng-repeat="card in job.customerCards" value="{{card.externalCardIdNonce}}">****-****-****-**{{card.last4DigitsCC}} {{card.cardType}}</option>
+                                        </select>
+                                        <small ng-show="paymentForm.cardSelection.$error.required && !paymentForm.cardSelection.$pristine" class="help-block">A Selection is Required!</small>
+                                        <br />
+                                        <br />
+                                        <button ng-click="job.openModal()" class="btn btn-primary btn-sm waves-effect">Add a new card</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="paymentForm.$invalid" ng-click="job.finalSubmit()">Submit</button>
+                        </form>
+                    </div>
+
+                    <!--GUEST PAYMENT FORM-->
+                    <div class="row" ng-show="!job.registeredUser()">
+                        <form name="guestPaymentForm" id="payment-form-cc" ng-submit="job.submitCard(guestPaymentForm.$valid)" novalidate>
+                            <div class="col-xs-12 col-md-6 form-group">
+                                <div class="z-depth-1">
+                                    <div class="card-header">
+                                        <fieldset>
+                                            <legend>Contact and Billing Information</legend>
+                                            <div class="form-group col-xs-6" ng-class="{'has-error' : guestPaymentForm.firstName.$invalid && !guestPaymentForm.firstName.$pristine }">
+                                                <input ng-model="job.firstName" class="form-control" type="text" name="firstName" placeholder="First Name" style="cursor: auto;" required>
+                                                <p ng-show="guestPaymentForm.firstName.$invalid && !guestPaymentForm.firstName.$pristine" class="help-block">Your first name is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-6" ng-class="{'has-error' : guestPaymentForm.lastName.$invalid && !guestPaymentForm.lastName.$pristine }">
+                                                <input ng-model="job.lastName" class="form-control" type="text" name="lastName" placeholder="Last Name" required>
+                                                <p ng-show="guestPaymentForm.lastName.$invalid && !guestPaymentForm.lastName.$pristine" class="help-block">Your last name is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-12" ng-class="{'has-error' : guestPaymentForm.phone.$invalid && !guestPaymentForm.phone.$pristine }">
+                                                <input id="Phone" class="form-control" ng-model="job.phone" ng-pattern="onlyNumbers" type="text" name="phone" placeholder="Phone Number" required>
+                                                <p ng-show="guestPaymentForm.phone.$invalid && !guestPaymentForm.phone.$pristine" class="help-block">A valid phone number is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-12" ng-class="{'has-error' : guestPaymentForm.address.$invalid && !guestPaymentForm.phoneaddress.$pristine }">
+                                                <input id="street-address" ng-model="job.address" class="form-control" type="text" name="address" placeholder="Street Address" required>
+                                                <p ng-show="guestPaymentForm.address.$invalid && !guestPaymentForm.address.$pristine" class="help-block">An address is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-6" ng-class="{'has-error' : guestPaymentForm.city.$invalid && !guestPaymentForm.city.$pristine }">
+                                                <input id="city" class="form-control" type="text" ng-model="job.city" name="city" placeholder="City" required>
+                                                <p ng-show="guestPaymentForm.city.$invalid && !guestPaymentForm.city.$pristine" class="help-block">A city is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-3" ng-class="{'has-error' : guestPaymentForm.state.$invalid && !guestPaymentForm.state.$pristine }">
+                                                <input id="state" class="form-control" ng-model="job.state" type="text" name="state" placeholder="State" maxlength="2" required>
+                                                <p ng-show="guestPaymentForm.state.$invalid && !guestPaymentForm.state.$pristine" class="help-block">A State is required.</p>
+                                            </div>
+                                            <div class="form-group col-xs-3" ng-class="{'has-error' : guestPaymentForm.zipCode.$invalid && !guestPaymentForm.zipCode.$pristine }">
+                                                <input id="zip" class="form-control" ng-model="job.zipCode" type="text" name="zipCode" maxlength="5" placeholder="Zip" required>
+                                                <p ng-show="guestPaymentForm.zipcode.$invalid && !guestPaymentForm.zipCode.$pristine" class="help-block">A zipcode is required.</p>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
+                                <div class="z-depth-1">
+                                    <div class="card-header">
+                                        <!-- CREDIT CARD FORM STARTS HERE -->
+                                        <div class="panel panel-default credit-card-box">
+                                            <div class="">
+                                                <div class="row display-tr">
+                                                    <h3 class="panel-title display-td">Payment Information</h3>
+                                                    <div class="display-td">
+                                                        <img class="img-responsive pull-right" src="http://i76.imgup.net/accepted_c22e0.png">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="form-group col-xs-6">
+                                                        <label class="control-label">Card Number</label>
+                                                        <div class="form-control" id="card-number"></div>
+                                                        <small class="helper-text"></small>
+                                                    </div>
+                                                    <div class="form-group col-xs-6">
+                                                        <div class="row">
+                                                            <label class="control-label col-xs-12">Expiration Date</label>
+                                                            <div class="col-xs-6">
+                                                                <div class="form-control" id="expiration-month"></div>
+                                                                <small class="helper-text"></small>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="form-control" id="expiration-year"></div>
+                                                                <small class="helper-text"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group col-xs-6">
+                                                        <label class="control-label">Security Code</label>
+                                                        <div class="form-control" id="cvv"></div>
+                                                        <small class="helper-text"></small>
+                                                    </div>
+                                                    <div class="form-group col-xs-6">
+                                                        <label class="control-label">Zipcode</label>
+                                                        <div class="form-control" id="postal-code"></div>
+                                                        <small class="helper-text"></small>
+                                                    </div>
+                                                </div>
+                                                <!--guestPaymentForm.$invalid &&-->
+                                                <div class="row" style="display: none;">
+                                                    <div class="col-xs-12">
+                                                        <p class="payment-errors"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- CREDIT CARD FORM ENDS HERE -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--This submit will need to be hooked up to ALL forms on the page-->
+                            <button id="guestButton" ng-disabled="guestPaymentForm.$invalid || !job.validCard" class="btn btn-primary btn-lg btn-block">Submit</button>
+                    </div>
+                </div>
+                <!--END OF BILLING SECTION-->
+            </uib-accordion>
+        </form>
+    </div>
+</div>

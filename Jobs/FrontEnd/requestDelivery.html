@@ -1,0 +1,27 @@
+﻿<div class="row">
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <div class="job-container">
+            <div class="card-header">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApsAAADJCAYAAABsS" width="50%" />
+            </div>
+            <div class="col-xs-12">
+                <div class="price-of-job">
+                    <span>$2 Per Minute, 2 Pro’s in Every Truck.</span>
+                </div>
+                <!--  <span ng-show="job.asapUnavailable"><strong><em>We are currently unable to take any more Same Day Delivery Jobs for Today.  We apologize for the inconvenience this may have caused you.</em></strong></span>-->
+            </div>
+            <div class="col-xs-12 job-asap">
+                <h4 class="well">{{job.asapJobLabel}}</h4>
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <!-- this shows the buttons 'Store Pickup', 'Home pickup', etc which are hardcoded in js file-->
+                    <div class="btn-group" role="group" ng-repeat="jobAsap in job.asapJobButtons">
+                        <button id="{{jobAsap.id}}" type="button" class="btn btn-primary waves-effect asap-job-types" value="{{jobAsap.value}}" ng-click="job.asapJobSelect(jobAsap)" ng-class="{activeJob : job.activeJob.id == jobAsap.id}">{{jobAsap.name}}</button>
+                    </div>
+                </div>
+            </div>
+            <!-- This is the green Save & Add Pickup Button-->
+            <button class="btn btn-block btn-success asap-submit-button" ng-disabled="job.asapSubmitDisabled" ng-click="job.submitAsapJob(job.asapJobButtons);">{{job.submitText}}</button>
+        </div>
+    </div>
+</div>
+

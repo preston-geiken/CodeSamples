@@ -1,0 +1,30 @@
+ALTER proc [dbo].[Jobs_WaypointItemsDelete]
+
+	@Id int
+
+as
+
+Begin
+	
+	Delete from dbo.JobWaypointsItems
+	Where Id = @Id
+
+End
+
+/*	TEST CODE:
+
+
+	Select *
+	From dbo.JobWaypointsItems
+	Where Id = @Id
+
+	Declare @Id int = 37
+	Exec dbo.Jobs_WaypointItemsDelete
+	@Id 
+
+	Select *
+	From dbo.JobWaypointsItems
+	Where Id = @Id
+	
+	
+*/

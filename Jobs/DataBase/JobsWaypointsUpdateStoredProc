@@ -1,0 +1,71 @@
+ALTER proc [dbo].[Jobs_WaypointsUpdate]
+	 @JobId int
+	 ,@AddressId int
+	 ,@SuiteNo nvarchar(50) = null
+	 ,@ContactName nvarchar(150) = null
+	 ,@Phone varchar(30) = null
+	 ,@SpecialInstructions nvarchar(MAX) = null
+	 ,@ServiceNote nvarchar(150) = null
+	 ,@ExternalCustomerId int = null
+	 ,@Id int
+as
+
+
+
+BEGIN
+
+	Declare @datNow datetime2 = getutcdate();
+
+	UPDATE [dbo].[JobWaypoints]
+	   SET [Modified] = @datNow
+		  ,[JobId] = @JobId
+		  ,[AddressId] = @AddressId
+		  ,[SuiteNo] = @SuiteNo
+		  ,[ContactName] = @ContactName
+		  ,[Phone] = @Phone
+		  ,[SpecialInstructions] = @SpecialInstructions
+		  ,[ServiceNote] = @ServiceNote
+		  ,[ExternalCustomerId] = @ExternalCustomerId
+
+	 WHERE Id = @Id
+
+
+
+END
+
+
+/*	TEST CODE:
+
+
+	Declare @Id int = 4
+
+	Select *
+	From [dbo].[JobWaypoints]
+	WHERE Id = @Id
+
+	Declare  @JobId int = 33
+			 ,@AddressId int = 22
+			 ,@SuiteNo nvarchar(50) = null
+			 ,@ContactName nvarchar(150) = 'contact name is preston'
+			 ,@Phone varchar(30) = null
+			 ,@SpecialInstructions nvarchar(MAX) = 'this is a stored proc test'
+			 ,@ServiceNote nvarchar(150) = 'service note is hurry up'
+			 ,@ExternalCustomerId int = null;
+			 
+
+	Exec [dbo].[Jobs_WaypointsUpdate]	 @JobId
+										 ,@AddressId
+										 ,@SuiteNo
+										 ,@ContactName
+										 ,@Phone
+										 ,@SpecialInstructions
+										 ,@ServiceNote
+										 ,@ExternalCustomerId
+										 ,@Id
+
+	Select *
+	From [dbo].[JobWaypoints]
+	WHERE Id = @Id
+	
+	
+*/

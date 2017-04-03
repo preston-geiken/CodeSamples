@@ -1,0 +1,76 @@
+ALTER proc [dbo].[Jobs_WaypointItemsUpdate]
+		 @Id int 
+		,@JobId int
+		,@WaypointId int
+		,@ItemTypeId int
+		,@ItemNote nvarchar(150) = null
+		,@Quantity int
+		,@MediaId int = null
+		,@Operation int = null
+		,@ParentItemId int = null
+
+as
+
+Begin
+	
+	Update dbo.JobWaypointsItems
+	Set 
+		 [Modified] = getutcdate()
+		,[JobId] = @JobId
+		,[WayPointId] = @WaypointId
+		,[ItemTypeId] = @ItemTypeId
+		,[ItemNote] = @ItemNote
+		,[Quantity] = @Quantity
+		,[MediaId] = @MediaId
+		,[Operation] = @Operation
+		,[ParentItemId] = @ParentItemId
+		
+	Where Id = @Id
+		
+
+End
+
+
+
+/*   TEST CODE:
+
+
+	DECLARE @Id int = 337
+
+	Select * 
+	From dbo.JobWaypointsItems
+	where @Id = id
+
+	DECLARE	
+			@JobId int = 960
+			,@WaypointId int = 257
+			,@ItemTypeId int = 2
+			,@ItemNote nvarchar(150) = null
+			,@Quantity int = 1
+			,@MediaId nvarchar(50) = null
+			,@Operation int = 2
+			,@ParentItemId int = 335
+
+
+	Update dbo.JobWaypointsItems
+		Set 
+			 [Modified] = getutcdate()
+			,[JobId] = @JobId
+			,[WayPointId] = @WaypointId
+			,[ItemTypeId] = @ItemTypeId
+			,[ItemNote] = @ItemNote
+			,[Quantity] = @Quantity
+			,[MediaId] = @MediaId
+			,[Operation] = @Operation
+			,[ParentItemId] = @ParentItemId
+
+			
+		Where Id = @Id
+
+	Select * 
+	From dbo.JobWaypointsItems
+	where @Id = id
+	
+	
+*/
+
